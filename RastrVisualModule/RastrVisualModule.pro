@@ -36,6 +36,7 @@ FORMS    += \
     mainwindow.ui \
     helpwindow.ui
 
+
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_0_Static-Release/release/ -lRastrManipulationLibrary
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_0_Static-Release/debug/ -lRastrManipulationLibrary
 else:unix: LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_0_Static-Release/ -lRastrManipulationLibrary

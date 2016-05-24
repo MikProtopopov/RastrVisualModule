@@ -183,18 +183,18 @@ int MainWindow::drawGraph(QCustomPlot *customPlot)
 
 void MainWindow::checkForSave()
 {
-    QMessageBox::StandardButton reply;
-     reply = QMessageBox::question(this, "Несохраненные данные", "Сохранить текущую матрицу?",
-                                   QMessageBox::Yes|QMessageBox::No);
-     if (reply == QMessageBox::Yes)
-     {
-         QString fileName = QFileDialog::getSaveFileName(this, tr("Экспортировать"),
+
+    reply = QMessageBox::question(this, "Несохраненные данные", "Сохранить текущую матрицу?",
+                                   QMessageBox::Yes|QMessageBox::No|QMessageBox::Cancel, QMessageBox::Yes);
+    if (reply == QMessageBox::Yes)
+    {
+        QString fileName = QFileDialog::getSaveFileName(this, tr("Экспортировать"),
                                                          "", tr("Текстовый файл (*.txt);;Все файлы(*)")); // Call for an "export" window
-         if (fileName.isEmpty())
+        if (fileName.isEmpty())
              return;
 
-         errorHandling(rastrManipulation.exportRastr(fileName));
-     }
+        errorHandling(rastrManipulation.saveRastr(fileName));
+    }
 }
 
 void MainWindow::clearVectors()
@@ -377,7 +377,7 @@ void MainWindow::on_actionNew_clicked()
     if (rastrManipulation.rastr1 != NULL)
         checkForSave();
 
-    if ((rastrManipulation.rastr1)&&(rastrManipulation.checkForSave()))
+    if (rastrManipulation.rastr1)
         rastrManipulation.deleteArray(rastrManipulation.iRastr);
     sWindow->exec();
     if (QDialog::Accepted != sWindow->result())
@@ -540,7 +540,6 @@ void MainWindow::on_actionExport_clicked()
     errorHandling(rastrManipulation.exportRastr(fileName));
 }
 
-
 // TODO Try using QtConcurrent to get rid of the freeze
 // Triggers movement of the moving rastr
 void MainWindow::on_pushButtonStep_clicked()
@@ -623,10 +622,13 @@ void MainWindow::on_pushButtonStep_clicked()
 // Quits the program
 void MainWindow::on_actionQuit_triggered()
 {
-    if (NULL != rastrManipulation.rastr1)
-        checkForSave();
-        rastrManipulation.deleteArray(rastrManipulation.iRastr);
-    exit(0);
+//    if (NULL != rastrManipulation.rastr1)
+//    {
+//        checkForSave();
+//        rastrManipulation.deleteArray(rastrManipulation.iRastr);
+//    }
+//    exit(0);
+    close();
     // TODO don't quit if cancelled
 }
 
@@ -742,4 +744,18 @@ void MainWindow::on_actionLoad_triggered()
 
      ui->actionExport->setEnabled(1);
      ui->actionSave->setEnabled(1);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    if (NULL != rastrManipulation.rastr1)
+    {
+        checkForSave();
+        if (reply == QMessageBox::Cancel)
+        {
+            event->ignore();
+            return;
+        }
+        rastrManipulation.deleteArray(rastrManipulation.iRastr);
+    }
 }
