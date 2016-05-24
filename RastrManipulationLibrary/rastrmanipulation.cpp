@@ -34,16 +34,6 @@ RastrManipulation::RastrManipulation()
     oscillation = 1;
 }
 
-int RastrManipulation::checkForSave()
-{
-    // TO DO
-    // call window asking if user wants to save the existing array
-    // save or export?
-    // if YES - do it - return 1
-    // if NO - carry on - return 0
-    return 0;
-}
-
 // Set oscillation value
 void RastrManipulation::setOscillation(int osci)
 {
@@ -56,7 +46,7 @@ void RastrManipulation::createNewRastr(const int &xInt, const int &yInt)
     iRastr = xInt;
     jRastr = yInt;
 
-    if ((rastr1)&&(checkForSave()))
+    if (rastr1)
         deleteArray(iRastr);
 
     rastr1 = new uint8_t*[iRastr];
@@ -74,7 +64,7 @@ void RastrManipulation::createNewRastrAdamar(const int &xInt)
     iRastr = xInt;
     jRastr = xInt;
 
-    if ((rastr1)&&(checkForSave()))
+    if (rastr1)
         deleteArray(iRastr);
 
     rastr1 = new uint8_t*[iRastr];
@@ -83,42 +73,59 @@ void RastrManipulation::createNewRastrAdamar(const int &xInt)
 
     for (int i=0;i<iRastr;i++)
         for(int j=0;j<jRastr;j++)
-            rastr1[i][j] = 1;
+           rastr1[i][j] = 1;     //!!!!
 
-    for (int i=2;i<iRastr;i++)
+    for (int i=1;i<iRastr;i++) //was 2 korabel
     {
         rastr1[i][i] = 0;
-        int a = legendre(i-1,iRastr-1);
-        for(int j=0;j<jRastr - i;j++)
+        int a = jacobi(i,iRastr-1);
+        for(int j=0;j<jRastr - i - 1;j++)
         {
             if (1 == a)
-                rastr1[j+1][j+i] = a;
-                rastr1[j+i][j+1] = 0;
-            if (-1 == a)
-                rastr1[j+1][j+i] = a;
-                rastr1[j+i][j+1] = 1;
+            {
+                rastr1[j+1][j+i+1] = 1;
+                rastr1[j+i+1][j+1] = 0;
+            }
+            else
+            {
+                rastr1[j+1][j+i+1] = 0;
+                rastr1[j+i+1][j+1] = 1;
+            }
         }
     }
 }
 
-int RastrManipulation::legendre(int a, int p)
-{
-    if (1 == a)
-        return 1;
-    if (0 == a % 2)
-        return (legendre(a/2,p) * ((-1)^((p^2 - 1) / 8)));
-    if (1 == a % 2)
-        return (legendre(p%a,p) * ((-1)^((a-1)*(p-1) / 4)));
-}
-
 int RastrManipulation::jacobi(int a, int p)
 {
-    if (1 == a)
-        return 1;
-    if (0 == a % 2)
-        return (legendre(a/2,p) * ((-1)^((p^2 - 1) / 8)));
-    if (1 == a % 2)
-        return (legendre(p%a,p) * ((-1)^((a-1)*(p-1) / 4)));
+    int s;
+        long a1 = a, e = 0, m, p1;
+
+        if (1 == a)
+            return 1;
+        if (0 == a % p)
+            return 0;
+        while (0 == (a1 & 1))
+        {
+          a1 >>= 1;
+          e++;
+        }
+
+        m = p % 8;
+        if (!(e & 1) || 1 == m || 7 == m)
+            s = 1;
+        else
+            if (m == 3 || m == 5)
+                s = - 1;
+
+        if (p % 4 == 3 && a1 % 4 == 3)
+            s = - s;
+
+        if (a1 != 1)
+            p1 = p % a1;
+        else
+            p1 = 1;
+
+      return s * jacobi(p1, a1);
 }
 
 // Delete existing array
@@ -139,12 +146,15 @@ int RastrManipulation::importRastr(QString fileName)
         return 1;
     QFile inFile(fileName); //File for import
 
+    if (!fileName.contains(".txt"))
+        return 2;
+
     if (!inFile.open(QIODevice::ReadOnly)) // Viability check - can program open file?
     {
         return 2;
     }
 
-    if ((rastr1)&&(checkForSave())) // Delete array if exists
+    if (rastr1) // Delete array if exists
         deleteArray(iRastr);
 
     QString readBufferString;          // Read-string from file
@@ -159,7 +169,8 @@ int RastrManipulation::importRastr(QString fileName)
     while (!inTextStream.atEnd())
     {
         readBufferString = inTextStream.readLine();
-        iRastr++;
+        if (!readBufferString.isEmpty())
+            iRastr++;
     }
 
     //Checking validity of the number of lines in file
@@ -177,9 +188,16 @@ int RastrManipulation::importRastr(QString fileName)
     for (int i=0; i<iRastr; i++)
     {
         readBufferString = inTextStream.readLine();
-        readBufferString.replace(QString(" "), QString(""));
-        readBufferString.replace(QString("\n"), QString(""));
-        readBufferString.replace(QString("\t"), QString(""));
+
+
+
+
+        if (!readBufferString.isEmpty())
+        {
+            readBufferString.replace(QString(" "), QString(""));
+            readBufferString.replace(QString("\n"), QString(""));
+            readBufferString.replace(QString("\t"), QString(""));
+
         readBufferInt = readBufferString.split(",");
 
         jRastr = readBufferInt.count();
@@ -209,6 +227,7 @@ int RastrManipulation::importRastr(QString fileName)
                     inFile.close();
                     return 5;
                 }
+        }
     }
 
     inFile.close();
@@ -263,6 +282,10 @@ char RastrManipulation::loadRastr(QString fileName)
 
     if (fileName.isEmpty())
         return 1;
+
+    if (!fileName.contains(".rastr"))
+        return 2;
+
     QFile inFile(fileName); //File for import
 
     if (!inFile.open(QIODevice::ReadOnly)) // Viability check - can program open file?
@@ -270,7 +293,7 @@ char RastrManipulation::loadRastr(QString fileName)
         return 2;
     }
 
-    if ((rastr1)&&(checkForSave())) // Delete array if exists
+    if (rastr1) // Delete array if exists
         deleteArray(iRastr);
 
     QDataStream inDataStream(&inFile); // Read stream of text
@@ -339,9 +362,6 @@ int RastrManipulation::compareRastr(int stepHorisontal, int stepVertical)
                 else
                     countWindow += rastr2[i][j] * rastr1[i + stepVertical][jRastr - columns + j];
             }
-
-
-
     return countWindow;
 }
 

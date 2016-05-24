@@ -28,13 +28,11 @@ public:
     int saveRastr(QString fileName);   // Function of saving rastrs
     char loadRastr(QString fileName);   // Function of loading rastrs
     void deleteArray(int DeleteLines); // Delete craeted rastrs
-    int legendre(int a, int p);
     int jacobi(int a, int p);
 
     int compareRastr(int stepHorisontal, int stepVertical); // Function for counting the amount of open windows in rastr overlap
 
     int fillRastr2();              // Function for filling moving rastr with consideration of "oscillation" value
-    int checkForSave();            // Function for asking user if they want to save current rastr, that is in memory
     int countWindows();            // Function for counting open windows in rastr overlap
     void setOscillation(int osci); // Function for setting oscillation value
 
