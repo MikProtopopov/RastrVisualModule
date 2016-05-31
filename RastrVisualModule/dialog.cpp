@@ -25,6 +25,8 @@ Dialog::Dialog(QWidget *parent) :
     ui->lineEdit->setText("0");
     startStep = -1;
 
+    ui->lineEdit->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,10}"),this));
+
 //    connect(ui->pushButton,SIGNAL(clicked()),this,SLOT(close()));
 
     setResult(Rejected);
@@ -40,6 +42,7 @@ void Dialog::on_pushButton_clicked()
     oscillation = ui->comboBox_2->currentIndex();
     mode = ui->comboBox->currentIndex();
     startStep = ui->lineEdit->text().toInt();
+
     setResult(Accepted);
 
     Dialog::setVisible(0);

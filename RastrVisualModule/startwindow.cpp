@@ -23,10 +23,33 @@ StartWindow::StartWindow(QWidget *parent) :
     ui(new Ui::StartWindow)
 {
     ui->setupUi(this);
+
+    height = 0;
+    width = 0;
     if (0 == ui->comboBox->currentIndex())
+    {
         ui->lineEditY->setEnabled(1);
-    else
+        ui->textBrowser->setText("Случайная матрица, создаваемая по заданным параметрам ширины и высоты.");
+    }
+    if (1 == ui->comboBox->currentIndex())
+    {
         ui->lineEditY->setEnabled(0);
+        ui->textBrowser->setText("Квадратная матрица, заданная по параметру ширины. Заполняется с использованием числа Лежандра.");
+    }
+    if (2 == ui->comboBox->currentIndex())
+    {
+        ui->lineEditY->setEnabled(0);
+        ui->textBrowser->setText("Матрица, построенная по алгоритмам Мурзиной.");
+    }
+    if (3 == ui->comboBox->currentIndex())
+    {
+        ui->lineEditY->setEnabled(1);
+        ui->textBrowser->setText("Матрица, построенная по алгоритмам Шлишевского.");
+    }
+
+    ui->lineEditX->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,10}"),this));
+    ui->lineEditY->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,10}"),this));
+
 }
 
 StartWindow::~StartWindow()
@@ -39,20 +62,51 @@ void StartWindow::on_pushButton_clicked()
     width = ui->lineEditX->text().toInt();
     if (0 == ui->comboBox->currentIndex())
         height = ui->lineEditY->text().toInt();
-    else
+    if (1 == ui->comboBox->currentIndex())
         height = -1;
     matrixType = ui->comboBox->currentIndex();
-    setResult(Accepted);
-
-    StartWindow::setVisible(0);
+    if (((width > 100)||(height > 100)||(width < 3)||(height < 3))&&((matrixType != 1)||(matrixType != 2)))
+    {
+        setResult(Rejected);
+        QMessageBox::information(this, tr("Ошибка"), tr("Введены неверные параметры."));
+    }
+    else
+    {
+        setResult(Accepted);
+        StartWindow::setVisible(0);
+    }
 }
 
 void StartWindow::on_comboBox_currentIndexChanged(int index)
 {
     if (0 == index)
+    {
         ui->lineEditY->setEnabled(1);
-    else
+        ui->label_2->setText("Высота");
+        ui->label->setText("Ширина");
+        ui->textBrowser->setText("Случайная матрица, создаваемая по заданным параметрам ширины и высоты.");
+    }
+    if (1 == index)
+    {
         ui->lineEditY->setEnabled(0);
+        ui->label_2->setText("Размерность");
+        ui->label->setText(" ");
+        ui->textBrowser->setText("Квадратная матрица, заданная по параметру ширины. Заполняется с использованием числа Лежандра.");
+    }
+    if (2 == index)
+    {
+        ui->lineEditY->setEnabled(0);
+        ui->label_2->setText("Размерность");
+        ui->label->setText(" ");
+        ui->textBrowser->setText("Матрица, построенная по алгоритмам Мурзиной.");
+    }
+    if (3 == index)
+    {
+        ui->lineEditY->setEnabled(1);
+        ui->label_2->setText("Размерность");
+        ui->label->setText("Максимум");
+        ui->textBrowser->setText("Матрица, построенная по алгоритмам Шлишевского. Вторым параметром является максимально допустимое количество открытых окон в пересечении растров.");
+    }
 }
 
 int StartWindow::getHeight()
@@ -69,4 +123,3 @@ int StartWindow::getMatrixType()
 {
     return matrixType;
 }
-// TODO add a caption with explanation of Adamar matrix creation
