@@ -200,8 +200,9 @@ void MainWindow::checkForSave()
              return;
 
         errorHandling(rastrManipulation.saveRastr(fileName));
-        rastrManipulation.deleteArray(rastrManipulation.iRastr);
     }
+    if (reply.result() == QMessageBox::No)
+        return;
 }
 
 void MainWindow::clearVectors()
@@ -308,7 +309,6 @@ void MainWindow::errorHandling(int errorCode) // Takes an error code and matches
 }
 
 
-
 // Triggers the start of rastr comparison
 void MainWindow::on_pushButtonStart_clicked()
 {
@@ -351,8 +351,6 @@ void MainWindow::on_pushButtonStart_clicked()
         exit(0);
     }
 
-
-
     errorHandling(drawGraph(ui->customPlot1)); // Draw line in graph 1
     if (1 == rastrManipulation.oscillation)
     {
@@ -394,20 +392,12 @@ void MainWindow::on_actionNew_clicked()
     {
         if (-1 == sWindow->getHeight())
             return;
-        rastrManipulation.iRastr = sWindow->getWidth();
-        rastrManipulation.jRastr = sWindow->getHeight();
-
-        rastrManipulation.createNewRastr(rastrManipulation.iRastr,rastrManipulation.jRastr);
+        rastrManipulation.createNewRastr(sWindow->getWidth(),sWindow->getHeight());
     }
 
     // Create rastr based on Adamar matrix
     if (sWindow->getMatrixType() == 1)
-    {
-        rastrManipulation.iRastr = sWindow->getWidth();
-        rastrManipulation.jRastr = sWindow->getWidth();
-
         rastrManipulation.createNewRastrAdamar(sWindow->getWidth());
-    }
 
     if (( (this->minimumHeight() - 20) / 2.1) / rastrManipulation.iRastr < 4)
     {
@@ -426,6 +416,8 @@ void MainWindow::on_actionNew_clicked()
     {
         paintRastr2->hide();
     }
+
+    clearVectors();
 
     // Set tick length for first graph
     ui->customPlot1->xAxis->setAutoTickStep(false);
@@ -504,6 +496,7 @@ void MainWindow::on_actionImport_clicked()
     ui->pushButtonStart->setEnabled(1); // Enables "Start" button
     ui->pushButtonColor->setEnabled(1);
 
+    clearVectors();
 
     // Set tick length for first graph
     ui->customPlot1->xAxis->setAutoTickStep(false);
@@ -666,7 +659,7 @@ void MainWindow::on_actionAbout_triggered()
     QMessageBox::about(this, "О программе",
                        "Функциональная библиотека и модуль визуализации для построения "
                        "\nи контроля корректности автокорреляционных растровых структур. "
-                       "\nВерсия PreAlpha v1.0"
+                       "\nВерсия PreRelease v1.0"
                        "\n"
                        "\nПротопопов Михаил, ВКИ НГУ 2016");
 }
@@ -725,14 +718,7 @@ void MainWindow::on_actionLoad_triggered()
      ui->pushButtonStart->setEnabled(1); // Enables "Start" button
      ui->pushButtonColor->setEnabled(1);
 
-     ui->customPlot1->clearPlottables();
-     ui->customPlot2->clearPlottables();
-     ui->customPlot3->clearPlottables();
-
-     ui->customPlot1->replot();
-     ui->customPlot2->replot();
-     ui->customPlot3->replot();
-
+     clearVectors();
 
      // Set tick length for first graph
      ui->customPlot1->xAxis->setAutoTickStep(false);

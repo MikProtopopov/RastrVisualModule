@@ -43,11 +43,11 @@ void RastrManipulation::setOscillation(int osci)
 // Create new rastr with accepted parameters
 void RastrManipulation::createNewRastr(const int &xInt, const int &yInt)
 {
+    if (NULL != rastr1)
+        deleteArray(iRastr);
+
     iRastr = xInt;
     jRastr = yInt;
-
-    if (rastr1)
-        deleteArray(iRastr);
 
     rastr1 = new uint8_t*[iRastr];
     for (int i=0; i<iRastr; i++)
@@ -56,7 +56,6 @@ void RastrManipulation::createNewRastr(const int &xInt, const int &yInt)
     for (int i=0;i<iRastr;i++)
         for(int j=0;j<jRastr;j++)
             rastr1[i][j] = rand() % 2;
-
 }
 
 void RastrManipulation::createNewRastrAdamar(const int &xInt)
@@ -134,8 +133,11 @@ void RastrManipulation::deleteArray(int DeleteLines) // DeleteLines - number of 
     for (int i=0; i<DeleteLines; i++)
         delete[] rastr1[i];
     delete[] rastr1;
-    delete[] rastr2;
     rastr1 = NULL;
+
+    if ((rastr2 != NULL)&&(1 == oscillation))
+        delete[] rastr2;
+
     rastr2 = NULL;
 }
 
@@ -189,9 +191,6 @@ int RastrManipulation::importRastr(QString fileName)
     {
         readBufferString = inTextStream.readLine();
 
-
-
-
         if (!readBufferString.isEmpty())
         {
             readBufferString.replace(QString(" "), QString(""));
@@ -204,7 +203,7 @@ int RastrManipulation::importRastr(QString fileName)
 
         if ((jRastrPrev != -1)&&(jRastrPrev != jRastr))
         {
-            deleteArray(iRastr);
+            deleteArray(i-1);
             jRastr = 0;
             inFile.close();
             return 4;
