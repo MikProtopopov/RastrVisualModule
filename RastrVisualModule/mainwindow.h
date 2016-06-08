@@ -93,7 +93,7 @@ private:
     void saveAs();
     void quit();
     void callFunction();
-    void drawThreadOsci();
+    void drawThreadOsci(int startStep, int endStep);
 
 
     QFuture<void> runThread;
