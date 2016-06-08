@@ -36,9 +36,17 @@ FORMS    += \
     mainwindow.ui \
     helpwindow.ui
 
+
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_0_Static-Release/release/ -lRastrManipulationLibrary
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_0_Static-Release/debug/ -lRastrManipulationLibrary
 else:unix: LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_0_Static-Release/ -lRastrManipulationLibrary
 
 INCLUDEPATH += $$PWD/../RastrManipulationLibrary
 DEPENDPATH += $$PWD/../RastrManipulationLibrary
+
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_1_Debug/release/ -lRastrManipulationLibrary
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_1_Debug/debug/ -lRastrManipulationLibrary
+else:unix: LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_1_Debug/ -lRastrManipulationLibrary
+
+INCLUDEPATH += $$PWD/../build-RastrManipulationLibrary-Qt5_5_1_Debug/debug
+DEPENDPATH += $$PWD/../build-RastrManipulationLibrary-Qt5_5_1_Debug/debug
