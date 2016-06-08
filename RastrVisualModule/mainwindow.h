@@ -42,6 +42,7 @@ public:
     int drawGraphOsci(QCustomPlot *customPlot);    // Draw graph for oscillation
     int drawGraphCompare(QCustomPlot *customPlot); // Draw graph for comparison
     void checkForSave();                           // Function that checks if user wants to save current matrix
+    void closeEvent(QCloseEvent *);
 
     void resizeEvent(QResizeEvent * event);
 
@@ -64,18 +65,20 @@ private slots:
     void on_actionImport_clicked();    // Action trigger for import
     void on_actionNew_clicked();       // Action trigger for creating new rastr
 
-    void on_pushButtonStep_clicked(); // Action trigger for rastr movement
-
-    void on_actionQuit_triggered(); // Action trigger for exit
-
+    void on_pushButtonStep_clicked();  // Action trigger for rastr movement
+    void on_actionQuit_triggered();    // Action trigger for exit
     void on_pushButtonColor_clicked(); // Action trigger for color change
-
-    void on_actionAbout_triggered();  // Action trigger for About window
-    void on_actionManual_triggered(); // Action trigger for User Manula window
+    void on_actionAbout_triggered();   // Action trigger for About window
+    void on_actionManual_triggered();  // Action trigger for User Manula window
 
     void on_actionSave_triggered();
-
     void on_actionLoad_triggered();
+
+    void stopThread();
+    void oneStep();
+
+signals:
+    stepSignal();
 
 private:
     Ui::MainWindow *ui;
@@ -89,6 +92,13 @@ private:
     void save();
     void saveAs();
     void quit();
+    void callFunction();
+    void drawThreadOsci();
+
+
+    QFuture<void> runThread;
+
+    QMessageBox reply;
 
     QMenuBar *menuBar;
     QMenu *fileMenu;
