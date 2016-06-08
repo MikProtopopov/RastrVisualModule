@@ -629,8 +629,6 @@ void MainWindow::on_pushButtonStep_clicked()
     // Automatic mode with oscillation
     if ((1 == rastrManipulation.oscillation)&&(1 == dialog->mode))
     {
-//        emit stepSignal();
-//        runThread = QtConcurrent::run(this, &MainWindow::drawThreadOsci, paintRastr2->stepMov, rastrManipulation.jRastr);
         runThread = QtConcurrent::run(this, &this->drawThreadOsci,paintRastr2->stepMov, rastrManipulation.jRastr);
         return;
     }
