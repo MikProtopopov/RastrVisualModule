@@ -52,6 +52,8 @@ void ProgressForm::threadRunner(int n, int start, int end)
     RastrManipulation rastrManipulation;
     Algorithm algorithm;
 
+    algorithm.rastrSize = n;
+
     algorithm.arrTemp1 = new int[n];
     for (int i=0; i<n; i++)
         algorithm.arrTemp1[i] = i;
@@ -86,9 +88,12 @@ void ProgressForm::threadRunner(int n, int start, int end)
 
     int i = 0;
     for (int j=0; j < start; j++)
-        algorithm.NextSetRow(algorithm.localRastr, n, algorithm.arrTemp1);
+        algorithm.NextSetRow();
 
-    while (algorithm.NextSetRow(algorithm.localRastr, n, algorithm.arrTemp1))
+    for (int j=0; j<n; j++)
+        algorithm.arrTemp1[j] = j;
+
+    while (algorithm.NextSetRow())
     {
         for (int j=0; j<n; j++)
             algorithm.arrTemp2[j] = j;
@@ -97,7 +102,7 @@ void ProgressForm::threadRunner(int n, int start, int end)
         Sleep(500);
 
         if (i < end)
-            while (algorithm.NextSetCol(algorithm.localRastr, n, algorithm.arrTemp2))
+            while (algorithm.NextSetCol())
             {
                 i++;
                 emit pbSignal(20 + i);
@@ -148,44 +153,44 @@ void Algorithm::swapRow(uint8_t **&a, int i, int j)
         a[j] = arrTemp;
 }
 
-bool Algorithm::NextSetCol(uint8_t **&a, int n, int *&arrTemp)
+bool Algorithm::NextSetCol()
 {
-        int j = n - 2;
-        while (j != -1 && arrTemp[j] >= arrTemp[j + 1])
+        int j = rastrSize - 2;
+        while (j != -1 && arrTemp2[j] >= arrTemp2[j + 1])
             j--;
         if (j == -1)
             return false; // больше перестановок нет
-        int k = n - 1;
-        while (arrTemp[j] >= arrTemp[k])
+        int k = rastrSize - 1;
+        while (arrTemp2[j] >= arrTemp2[k])
             k--;
-        swapCol(a, j, k, n);
-        swap(arrTemp,j,k);
-        int l = j + 1, r = n - 1; // сортируем оставшуюся часть последовательности
+        swapCol(localRastr, j, k, rastrSize);
+        swap(arrTemp2,j,k);
+        int l = j + 1, r = rastrSize - 1; // сортируем оставшуюся часть последовательности
         while (l<r)
         {
-            swapCol(a, l, r,n);
-            swap(arrTemp,l++,r--);
+            swapCol(localRastr, l, r,rastrSize);
+            swap(arrTemp2,l++,r--);
         }
         return true;
 }
 
-bool Algorithm::NextSetRow(uint8_t **&a, int n, int *&arrTemp)
+bool Algorithm::NextSetRow()
 {
-        int j = n - 2;
-        while (j != -1 && arrTemp[j] >= arrTemp[j + 1])
+        int j = rastrSize - 2;
+        while (j != -1 && arrTemp1[j] >= arrTemp1[j + 1])
             j--;
         if (j == -1)
             return false; // больше перестановок нет
-        int k = n - 1;
-        while (arrTemp[j] >= arrTemp[k])
+        int k = rastrSize - 1;
+        while (arrTemp1[j] >= arrTemp1[k])
             k--;
-        swapRow(a, j, k);
-        swap(arrTemp,j,k);
-        int l = j + 1, r = n - 1; // сортируем оставшуюся часть последовательности
+        swapRow(localRastr, j, k);
+        swap(arrTemp1,j,k);
+        int l = j + 1, r = Algorithm::rastrSize - 1; // сортируем оставшуюся часть последовательности
         while (l<r)
         {
-            swapRow(a, l, r);
-            swap(arrTemp,l++,r--);
+            swapRow(localRastr, l, r);
+            swap(arrTemp1,l++,r--);
         }
         return true;
 }

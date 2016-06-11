@@ -75,12 +75,13 @@ public:
     uint8_t **localRastr;
     int *arrTemp1;
     int *arrTemp2;
+    int rastrSize;
 
     void swapCol(uint8_t **&a, int i, int j, int N);
     void swapRow(uint8_t **&a, int i, int j);
     void swap(int *a, int i, int j);
-    bool NextSetCol(uint8_t **&a, int n, int *&arrTemp);
-    bool NextSetRow(uint8_t **&a, int n, int *&arrTemp);
+    bool NextSetCol();
+    bool NextSetRow();
 
 };
 
