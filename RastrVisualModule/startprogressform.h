@@ -13,24 +13,37 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-#include "mainwindow.h"
-#include "startwindow.h"
-#include "rastrmanipulation.h"
-#include <QApplication>
-#include <QSizePolicy>
+#ifndef STARTPROGRESSFORM_H
+#define STARTPROGRESSFORM_H
 
+#include <QDialog>
+#include "progressform.h"
 
-int main(int argc, char *argv[])
-{
-    QApplication a(argc, argv);
-    MainWindow mainwindow;
-    StartWindow sWindow;
-
-    QObject::connect(&sWindow, SIGNAL(newParametersSet(int xInt, int yInt)),
-                     &mainwindow, SLOT(acceptParameters(int xInt, int yInt)));
-
-    mainwindow.show();
-
-
-    return a.exec();
+namespace Ui {
+class StartProgressForm;
 }
+
+class StartProgressForm : public QDialog
+{
+    Q_OBJECT
+
+public:
+    explicit StartProgressForm(QWidget *parent = 0);
+    ~StartProgressForm();
+    int lineNumber;
+    int setNumber(int i);
+
+private slots:
+    void on_pushButton_clicked();
+
+    void on_pushButton_2_clicked();
+
+private:
+    Ui::StartProgressForm *ui;
+    ProgressForm *pForm;
+
+    int threadCount;
+    QString savePath;
+};
+
+#endif // STARTPROGRESSFORM_H

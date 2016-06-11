@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     paintrastr.cpp \
     mainwindow.cpp \
     qcustomplot.cpp \
-    helpwindow.cpp
+    helpwindow.cpp \
+    progressform.cpp \
+    startprogressform.cpp
 
 HEADERS  += \
     dialog.h \
@@ -28,13 +30,17 @@ HEADERS  += \
     paintrastr.h \
     mainwindow.h \
     qcustomplot.h \
-    helpwindow.h
+    helpwindow.h \
+    progressform.h \
+    startprogressform.h
 
 FORMS    += \
     dialog.ui \
     startwindow.ui \
     mainwindow.ui \
-    helpwindow.ui
+    helpwindow.ui \
+    progressform.ui \
+    startprogressform.ui
 
 
 win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../build-RastrManipulationLibrary-Qt5_5_0_Static-Release/release/ -lRastrManipulationLibrary
