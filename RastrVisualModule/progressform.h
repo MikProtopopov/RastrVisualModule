@@ -61,17 +61,27 @@ private:
     }
 
     void threadRunner(int n, int start, int end);
-    void swapCol(uint8_t **a, int i, int j, int N);
-    void swapRow(uint8_t **a, int i, int j);
-    void swap(int *a, int i, int j);
-    bool NextSetCol(uint8_t **a, int n, int *arrTemp);
-    bool NextSetRow(uint8_t **a, int n, int *arrTemp);
-    void Process(int **a, int n, int *arrTemp1, int *arrTemp2);
+
 
     QFuture<void> runThread;
 
     int start;
     int finish;
+};
+
+class Algorithm
+{
+public:
+    uint8_t **localRastr;
+    int *arrTemp1;
+    int *arrTemp2;
+
+    void swapCol(uint8_t **&a, int i, int j, int N);
+    void swapRow(uint8_t **&a, int i, int j);
+    void swap(int *a, int i, int j);
+    bool NextSetCol(uint8_t **&a, int n, int *&arrTemp);
+    bool NextSetRow(uint8_t **&a, int n, int *&arrTemp);
+
 };
 
 #endif // PROGRESSFORM_H

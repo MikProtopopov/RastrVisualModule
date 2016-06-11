@@ -49,29 +49,26 @@ void ProgressForm::setNumber(int i)
 
 void ProgressForm::threadRunner(int n, int start, int end)
 {
-    int *arrTemp1;
-    int *arrTemp2;
-
     RastrManipulation rastrManipulation;
+    Algorithm algorithm;
 
-    arrTemp1 = new int[n];
+    algorithm.arrTemp1 = new int[n];
     for (int i=0; i<n; i++)
-        arrTemp1[i] = i;
+        algorithm.arrTemp1[i] = i;
 
-    arrTemp2 = new int[n];
+    algorithm.arrTemp2 = new int[n];
     for (int i=0; i<n; i++)
-        arrTemp2[i] = i;
+        algorithm.arrTemp2[i] = i;
 
     rastrManipulation.setOscillation(1);
     rastrManipulation.createNewRastrAdamar(n);
 
-    uint8_t **localRastr;
-    localRastr = new uint8_t*[n];
+    algorithm.localRastr = new uint8_t*[n];
     for (int i=0; i<n; i++)
-        localRastr[i] = new uint8_t[n];
+        algorithm.localRastr[i] = new uint8_t[n];
 
     for (int i=0; i<n; i++)
-        memmove(localRastr[i],rastrManipulation.rastr1[i],n);
+        memmove(algorithm.localRastr[i],rastrManipulation.rastr1[i],n);
 
     rastrManipulation.deleteArray(n);
 
@@ -80,7 +77,7 @@ void ProgressForm::threadRunner(int n, int start, int end)
     memset(rastrManipulation.rastr1[0], 0, n);
 
     for (int i=0; i<n; i++)
-        rastrManipulation.rastr1[i+1] = localRastr[i];
+        rastrManipulation.rastr1[i+1] = algorithm.localRastr[i];
 
     rastrManipulation.iRastr = n+1;
     rastrManipulation.jRastr = n;
@@ -89,18 +86,18 @@ void ProgressForm::threadRunner(int n, int start, int end)
 
     int i = 0;
     for (int j=0; j < start; j++)
-        NextSetRow(localRastr, n, arrTemp1);
+        algorithm.NextSetRow(algorithm.localRastr, n, algorithm.arrTemp1);
 
-    while (NextSetRow(localRastr, n, arrTemp1))
+    while (algorithm.NextSetRow(algorithm.localRastr, n, algorithm.arrTemp1))
     {
         for (int j=0; j<n; j++)
-            arrTemp2[j] = j;
+            algorithm.arrTemp2[j] = j;
 
         emit pbSignal(10);
         Sleep(500);
 
         if (i < end)
-            while (NextSetCol(localRastr, n, arrTemp2))
+            while (algorithm.NextSetCol(algorithm.localRastr, n, algorithm.arrTemp2))
             {
                 i++;
                 emit pbSignal(20 + i);
@@ -128,7 +125,7 @@ void ProgressForm::on_pushButton_3_clicked()
 //    runThread = QtConcurrent::run(this, &this->threadRunner, number);
 }
 
-void ProgressForm::swapCol(uint8_t **a, int i, int j, int N)
+void Algorithm::swapCol(uint8_t **&a, int i, int j, int N)
 {
     for (int k=0; k<N; k++)
     {
@@ -138,20 +135,20 @@ void ProgressForm::swapCol(uint8_t **a, int i, int j, int N)
     }
 }
 
-void ProgressForm::swap(int *a, int i, int j) {
+void Algorithm::swap(int *a, int i, int j) {
   int s = a[i];
   a[i] = a[j];
   a[j] = s;
 }
 
-void ProgressForm::swapRow(uint8_t **a, int i, int j)
+void Algorithm::swapRow(uint8_t **&a, int i, int j)
 {
         uint8_t *arrTemp = a[i];
         a[i] = a[j];
         a[j] = arrTemp;
 }
 
-bool ProgressForm::NextSetCol(uint8_t **a, int n, int *arrTemp)
+bool Algorithm::NextSetCol(uint8_t **&a, int n, int *&arrTemp)
 {
         int j = n - 2;
         while (j != -1 && arrTemp[j] >= arrTemp[j + 1])
@@ -172,7 +169,7 @@ bool ProgressForm::NextSetCol(uint8_t **a, int n, int *arrTemp)
         return true;
 }
 
-bool ProgressForm::NextSetRow(uint8_t **a, int n, int *arrTemp)
+bool Algorithm::NextSetRow(uint8_t **&a, int n, int *&arrTemp)
 {
         int j = n - 2;
         while (j != -1 && arrTemp[j] >= arrTemp[j + 1])
