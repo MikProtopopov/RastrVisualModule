@@ -21,7 +21,8 @@ SOURCES += main.cpp\
     qcustomplot.cpp \
     helpwindow.cpp \
     progressform.cpp \
-    startprogressform.cpp
+    startprogressform.cpp \
+    algorithm.cpp
 
 HEADERS  += \
     dialog.h \
@@ -32,7 +33,8 @@ HEADERS  += \
     qcustomplot.h \
     helpwindow.h \
     progressform.h \
-    startprogressform.h
+    startprogressform.h \
+    algorithm.h
 
 FORMS    += \
     dialog.ui \

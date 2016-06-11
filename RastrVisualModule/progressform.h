@@ -36,7 +36,7 @@ public:
     explicit ProgressForm(QWidget *parent = 0, int rastrSize = 0, int procStart = 0, int procEnd = 0);
     ~ProgressForm();
     void setLimits(int begin, int end);
-    int number;
+    QString numberString;
 
 public slots:
     void pbUpdate(int i);
@@ -53,7 +53,7 @@ private:
 
     int factorial(int n)
     {
-        int factResult = 1;
+        factResult = 1;
         for (int i=1; i<=n; i++)
             factResult *= i;
         return factResult;
@@ -68,23 +68,6 @@ private:
 
     int start;
     int finish;
-};
-
-class Algorithm
-{
-public:
-    uint8_t **localRastr;
-    int *arrTemp1;
-    int *arrTemp2;
-    int *arrTempStart;
-    int rastrSize;
-
-    void swapCol(uint8_t **&a, int i, int j, int N);
-    void swapRow(uint8_t **&a, int i, int j);
-    void swap(int *a, int i, int j);
-    bool NextSetCol();
-    bool NextSetRow();
-
 };
 
 #endif // PROGRESSFORM_H
