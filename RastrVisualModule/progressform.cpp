@@ -20,31 +20,28 @@
 
 #include <math.h>
 
-ProgressForm::ProgressForm(QWidget *parent) :
+ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart, int procEnd) :
     QDialog(parent),
     ui(new Ui::ProgressForm)
 {
     ui->setupUi(this);
     filePath = "";
     ui->pushButton_3->setText("Остановить");
+    number = rastrSize;
 
     ui->progressBar->setValue(0);
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(100);
 
-    connect(this, SIGNAL(pbSignal(int)), this, SLOT(pbUpdate(int)), Qt::DirectConnection);
+    connect(this, SIGNAL(pbSignal(int)), this, SLOT(pbUpdate(int)), Qt::DirectConnection);\
 
-    runThread = QtConcurrent::run(this, &this->threadRunner, number, 0, 24);
+    factorial(rastrSize);
+    runThread = QtConcurrent::run(this, &this->threadRunner, rastrSize, procStart, factResult /*procEnd*/); // REMOVE FACT RESULT
 }
 
 ProgressForm::~ProgressForm()
 {
     delete ui;
-}
-
-void ProgressForm::setNumber(int i)
-{
-    number = i;
 }
 
 void ProgressForm::threadRunner(int n, int start, int end)
@@ -72,7 +69,7 @@ void ProgressForm::threadRunner(int n, int start, int end)
     for (int i=0; i<n; i++)
         memmove(algorithm.localRastr[i],rastrManipulation.rastr1[i],n);
 
-    rastrManipulation.deleteArray(n);
+    rastrManipulation.deleteArray(rastrManipulation.iRastr);
 
     rastrManipulation.rastr1 = new uint8_t*[n+1];
     rastrManipulation.rastr1[0] = new uint8_t[n];
@@ -86,10 +83,12 @@ void ProgressForm::threadRunner(int n, int start, int end)
 
     rastrManipulation.fillRastr2();
 
+    ui->label_2->setText((QString)number);
+
     for (int i=0; i<start; i++)
         if (!algorithm.NextSetRow())
         {
-            rastrManipulation.deleteArray(number);
+            rastrManipulation.deleteArray(rastrManipulation.iRastr);
             delete algorithm.arrTemp1;
             delete algorithm.arrTemp2;
             delete algorithm.arrTempStart;
@@ -99,11 +98,11 @@ void ProgressForm::threadRunner(int n, int start, int end)
 
     for (int i = start; i<end; i++)
     {
-
         memmove(algorithm.arrTemp2,algorithm.arrTempStart,n);
+        if (!algorithm.NextSetRow())
+            break;
 
-        if (algorithm.NextSetCol())
-            emit pbSignal(i); // * 100 / (end+1)
+        emit pbSignal(i); // * 100 / (end+1)
     }
 
 //    while (algorithm.NextSetRow())

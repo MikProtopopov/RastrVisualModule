@@ -65,7 +65,6 @@ void StartProgressForm::on_pushButton_2_clicked()
         QMessageBox::information(this, tr("Ошибка"), tr("Необходимо задать количество потоков."));
         return;
     }
-    pForm = new ProgressForm(this);
-    pForm->setNumber(lineNumber);
+    pForm = new ProgressForm(this, lineNumber, 0, 0);
     pForm->exec();
 }

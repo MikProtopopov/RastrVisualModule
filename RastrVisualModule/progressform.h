@@ -33,11 +33,10 @@ class ProgressForm : public QDialog
     Q_OBJECT
 
 public:
-    explicit ProgressForm(QWidget *parent = 0);
+    explicit ProgressForm(QWidget *parent = 0, int rastrSize = 0, int procStart = 0, int procEnd = 0);
     ~ProgressForm();
     void setLimits(int begin, int end);
     int number;
-    void setNumber(int i);
 
 public slots:
     void pbUpdate(int i);
@@ -54,11 +53,13 @@ private:
 
     int factorial(int n)
     {
-        int k = 1;
+        int factResult = 1;
         for (int i=1; i<=n; i++)
-            k = k * i;
-        return k;
+            factResult *= i;
+        return factResult;
     }
+
+    int factResult;
 
     void threadRunner(int n, int start, int end);
 
