@@ -34,7 +34,7 @@ ProgressForm::ProgressForm(QWidget *parent) :
 
     connect(this, SIGNAL(pbSignal(int)), this, SLOT(pbUpdate(int)), Qt::DirectConnection);
 
-    runThread = QtConcurrent::run(this, &this->threadRunner, number, 0, factorial(number));
+    runThread = QtConcurrent::run(this, &this->threadRunner, number, 0, 24);
 }
 
 ProgressForm::~ProgressForm()
@@ -54,13 +54,13 @@ void ProgressForm::threadRunner(int n, int start, int end)
 
     algorithm.rastrSize = n;
 
-    algorithm.arrTemp1 = new int[n];
+    algorithm.arrTempStart = new int[n];
     for (int i=0; i<n; i++)
-        algorithm.arrTemp1[i] = i;
+        algorithm.arrTempStart[i] = i;
 
+    algorithm.arrTemp1 = new int[n];
+    memmove(algorithm.arrTemp1,algorithm.arrTempStart,n);
     algorithm.arrTemp2 = new int[n];
-    for (int i=0; i<n; i++)
-        algorithm.arrTemp2[i] = i;
 
     rastrManipulation.setOscillation(1);
     rastrManipulation.createNewRastrAdamar(n);
@@ -86,36 +86,53 @@ void ProgressForm::threadRunner(int n, int start, int end)
 
     rastrManipulation.fillRastr2();
 
-    int i = 0;
-    for (int j=0; j < start; j++)
-        algorithm.NextSetRow();
+    for (int i=0; i<start; i++)
+        if (!algorithm.NextSetRow())
+        {
+            rastrManipulation.deleteArray(number);
+            delete algorithm.arrTemp1;
+            delete algorithm.arrTemp2;
+            delete algorithm.arrTempStart;
+            delete algorithm.localRastr;
+            return;
+        }
 
-    for (int j=0; j<n; j++)
-        algorithm.arrTemp1[j] = j;
-
-    while (algorithm.NextSetRow())
+    for (int i = start; i<end; i++)
     {
-        for (int j=0; j<n; j++)
-            algorithm.arrTemp2[j] = j;
 
-        emit pbSignal(10);
-        Sleep(500);
+        memmove(algorithm.arrTemp2,algorithm.arrTempStart,n);
 
-        if (i < end)
-            while (algorithm.NextSetCol())
-            {
-                i++;
-                emit pbSignal(20 + i);
-            }
+        if (algorithm.NextSetCol())
+            emit pbSignal(i); // * 100 / (end+1)
     }
+
+//    while (algorithm.NextSetRow())
+//    {
+//        for (int j=0; j<n; j++)
+//            algorithm.arrTemp2[j] = j;
+
+//        emit pbSignal(10);
+//        Sleep(500);
+
+//        if (i < end)
+//            while (algorithm.NextSetCol())
+//            {
+//                i++;
+//                emit pbSignal(i);
+//            }
+//    }
     rastrManipulation.deleteArray(n);
+    delete algorithm.arrTemp1;
+    delete algorithm.arrTemp2;
+    delete algorithm.arrTempStart;
+    delete algorithm.localRastr;
     return;
 }
 
 void ProgressForm::pbUpdate(int i)
 {
     ui->progressBar->setValue(i);
-    Sleep(300);
+    Sleep(500);
     return;
 }
 
@@ -155,23 +172,21 @@ void Algorithm::swapRow(uint8_t **&a, int i, int j)
 
 bool Algorithm::NextSetCol()
 {
-        int j = rastrSize - 2;
-        while (j != -1 && arrTemp2[j] >= arrTemp2[j + 1])
-            j--;
-        if (j == -1)
-            return false; // больше перестановок нет
-        int k = rastrSize - 1;
-        while (arrTemp2[j] >= arrTemp2[k])
-            k--;
-        swapCol(localRastr, j, k, rastrSize);
-        swap(arrTemp2,j,k);
-        int l = j + 1, r = rastrSize - 1; // сортируем оставшуюся часть последовательности
-        while (l<r)
-        {
-            swapCol(localRastr, l, r,rastrSize);
-            swap(arrTemp2,l++,r--);
-        }
-        return true;
+  int j = rastrSize - 2;
+  while (j != -1 && arrTemp2[j] >= arrTemp2[j + 1]) j--;
+  if (j == -1)
+    return false; // больше перестановок нет
+  int k = rastrSize - 1;
+  while (arrTemp2[j] >= arrTemp2[k]) k--;
+  swap(arrTemp2, j, k);
+  swapCol(localRastr, j,k,rastrSize);
+  int l = j + 1, r = rastrSize - 1; // сортируем оставшуюся часть последовательности
+  while (l<r)
+  {
+    swap(arrTemp2, l++, r--);
+    swapCol(localRastr, l,r,rastrSize);
+  }
+  return true;
 }
 
 bool Algorithm::NextSetRow()
@@ -186,7 +201,7 @@ bool Algorithm::NextSetRow()
             k--;
         swapRow(localRastr, j, k);
         swap(arrTemp1,j,k);
-        int l = j + 1, r = Algorithm::rastrSize - 1; // сортируем оставшуюся часть последовательности
+        int l = j + 1, r = rastrSize - 1; // сортируем оставшуюся часть последовательности
         while (l<r)
         {
             swapRow(localRastr, l, r);
@@ -194,3 +209,4 @@ bool Algorithm::NextSetRow()
         }
         return true;
 }
+

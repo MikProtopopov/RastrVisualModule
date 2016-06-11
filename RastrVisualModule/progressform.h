@@ -75,6 +75,7 @@ public:
     uint8_t **localRastr;
     int *arrTemp1;
     int *arrTemp2;
+    int *arrTempStart;
     int rastrSize;
 
     void swapCol(uint8_t **&a, int i, int j, int N);
