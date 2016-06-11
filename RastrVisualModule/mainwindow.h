@@ -23,6 +23,8 @@
 #include "rastrmanipulation.h"
 #include "paintrastr.h"
 #include "helpwindow.h"
+#include "progressform.h"
+#include "startprogressform.h"
 
 #include "qcustomplot.h"
 
@@ -57,6 +59,9 @@ public:
     QVector<double> graphY;     // Vector for drawing of graph, for Y axis, for non-oscillated graph
     QVector<double> graphYOsci; // Vector for drawing of graph, for Y axis, for oscillated graph
     QVector<double> graphYComp; // Vector for drawing of graph, for Y axis, for comparison graph
+public slots:
+    void oneStep();
+    void oneStepOsci();
 
 private slots:
     void clearVectors();
@@ -74,17 +79,18 @@ private slots:
     void on_actionSave_triggered();
     void on_actionLoad_triggered();
 
-    void stopThread();
-    void oneStep();
 
 signals:
     stepSignal();
+    stepSignalOsci();
 
 private:
     Ui::MainWindow *ui;
     Dialog *dialog;
     StartWindow *sWindow;
     HelpWindow *helpWindow;
+    StartProgressForm *sPForm;
+
     void createAction();
     void createMenu();
     void newFile();
@@ -93,6 +99,7 @@ private:
     void saveAs();
     void quit();
     void callFunction();
+    void drawThread(int startStep, int endStep);
     void drawThreadOsci(int startStep, int endStep);
 
 

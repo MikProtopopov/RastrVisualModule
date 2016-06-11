@@ -21,6 +21,7 @@
 #include "paintrastr.h"
 #include "qcustomplot.h"
 #include "helpwindow.h"
+#include "startprogressform.h"
 
 #include <malloc.h>
 #include <fstream>
@@ -48,6 +49,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     sWindow = NULL;
     paintRastr1 = NULL;
     paintRastr2 = NULL;
+    sPForm = NULL;
+
     try
     {
         dialog = new Dialog(this);
@@ -55,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
         helpWindow = new HelpWindow(this);
         paintRastr1 = new PaintRastr(this);
         paintRastr2 = new PaintRastr(this);
+        sPForm = new StartProgressForm(this);
     } catch (...){
         QMessageBox::information(this, tr("Ошибка"), tr("Недостаточно памяти для работы программы."));
         if (NULL != dialog)
@@ -65,6 +69,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
             paintRastr1->deleteLater();
         if (NULL != paintRastr2)
             paintRastr2->deleteLater();
+        if (NULL != sPForm)
+            sPForm->deleteLater();
         exit(0);
     }
 
@@ -103,8 +109,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->actionImport, SIGNAL(triggered()), this, SLOT(on_actionImport_clicked()));
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(on_actionNew_clicked()));
     connect(ui->actionManual, SIGNAL(triggered()), helpWindow, SLOT(loadHelp()));
-    connect(ui->pushButtonStop, SIGNAL(pressed()),this,SLOT(stopThread()));
-    connect(this, SIGNAL(stepSignal), this, SLOT(oneStep()));
+    connect(this, SIGNAL(stepSignal()), this, SLOT(oneStep()), Qt::DirectConnection);
+    connect(this, SIGNAL(stepSignalOsci()), this, SLOT(oneStepOsci()), Qt::DirectConnection);
+
 }
 
 MainWindow::~MainWindow()
@@ -430,11 +437,27 @@ void MainWindow::on_actionNew_clicked()
         if (-1 == sWindow->getHeight())
             return;
         errorHandling(rastrManipulation.createNewRastr(sWindow->getWidth(),sWindow->getHeight()));
+        ui->pushButtonStep->setEnabled(0); // Disables "Step" button
+        ui->pushButtonStart->setEnabled(1); // Enables "Start" button
+        ui->pushButtonColor->setEnabled(1);
     }
 
     // Create rastr based on Adamar matrix
     if (sWindow->getMatrixType() == 1)
+    {
         rastrManipulation.createNewRastrAdamar(sWindow->getWidth());
+        ui->pushButtonStep->setEnabled(0); // Disables "Step" button
+        ui->pushButtonStart->setEnabled(1); // Enables "Start" button
+        ui->pushButtonColor->setEnabled(1);
+    }
+
+    if (sWindow->getMatrixType() == 3)
+    {
+//        rastrManipulation.createNewRastrAdamar(sWindow->getWidth());
+        sPForm->setNumber(sWindow->getWidth());
+        sPForm->exec();
+    }
+
 
     paintRastr1->setParameters(ui->graphicsView_1->height(), ui->graphicsView_1->width(),
                                rastrManipulation.iRastr, rastrManipulation.jRastr,rastrManipulation.jRastr, Qt::gray,
@@ -481,9 +504,7 @@ void MainWindow::on_actionNew_clicked()
     ui->actionExport->setEnabled(1);
     ui->actionSave->setEnabled(1);
 
-    ui->pushButtonStep->setEnabled(0); // Disables "Step" button
-    ui->pushButtonStart->setEnabled(1); // Enables "Start" button
-    ui->pushButtonColor->setEnabled(1);
+
 }
 
 // Triggers import of a rastr from a text file
@@ -571,57 +592,61 @@ void MainWindow::on_actionExport_clicked()
 // TODO Try using QtConcurrent to get rid of the freeze
 // Triggers movement of the moving rastr
 
-
-//    while (paintRastr2->stepMov + paintRastr2->oStatus < rastrManipulation.jRastr * 4)
-//    {
-//        Sleep(100);
-//    }
-
-
-
 void MainWindow::oneStep()
 {
-    if ((paintRastr2->stepMov < rastrManipulation.jRastr * 2)&&(paintRastr2->stepMov == paintRastr2->oStatus))
-    {
-        paintRastr2->stepMov += 1;  // Representation of a Step
-        paintRastr2->update(); // Update painted rastr with new coordinates
-    }
-    else
-        if (paintRastr2->oStatus < rastrManipulation.jRastr * 2)
-        {
-            paintRastr2->oStatus += 1; // Rastr's vertical position - uneven=TOP, even=BOTTOM
-            paintRastr2->update(); // Update painted rastr with new coordinates
-        }
+    if (paintRastr2->stepMov >= rastrManipulation.jRastr * 2)
+        return;
 
-    if (0 == paintRastr2->oStatus % 2)
+    if (paintRastr2->stepMov < rastrManipulation.jRastr * 2)
     {
+        paintRastr2->stepMov += 1;                 // Representation of a Step
         errorHandling(drawGraph(ui->customPlot1)); // Draw line in graph 1
         ui->label->setText("Открытых окон: " + QString::number(graphY.last()));
+        paintRastr2->update();
     }
-    else
+    return;
+}
+
+void MainWindow::oneStepOsci()
+{
+    if ((paintRastr2->stepMov >= rastrManipulation.jRastr * 2)&&(0 == paintRastr2->oStatus))
+        return;
+
+    if (paintRastr2->stepMov % 2 != paintRastr2->oStatus)
     {
+        paintRastr2->oStatus = !paintRastr2->oStatus;
         errorHandling(drawGraphOsci(ui->customPlot2));    // Draw line in graph 2
         errorHandling(drawGraphCompare(ui->customPlot3)); // Draw line in graph 3
         ui->label_2->setText("Открытых окон: " + QString::number(graphYOsci.last()));
         ui->label_3->setText("Открытых окон: " + QString::number(graphYComp.last()));
+        paintRastr2->update(); // Update painted rastr with new coordinates
     }
-    paintRastr2->update(); // Update painted rastr with new coordinates
+    else
+    {
+        paintRastr2->stepMov += 1;  // Representation of a Step
+        errorHandling(drawGraph(ui->customPlot1)); // Draw line in graph 1
+        ui->label->setText("Открытых окон: " + QString::number(graphY.last()));
+        paintRastr2->update(); // Update painted rastr with new coordinates
+    }
+    return;
+}
 
+void MainWindow::drawThread(int startStep, int endStep)
+{
+    for (int i = startStep; i< endStep * 2; i++)
+    {
+        emit stepSignal();
+        Sleep(500);
+    }
 }
 
 void MainWindow::drawThreadOsci(int startStep, int endStep)
 {
-    for (int i = startStep; i < endStep * 2; i++)
+    for (int i = startStep; i < endStep * 4; i++)
     {
-//        emit stepSignal();
-        oneStep();
-        Sleep(10);
+        emit stepSignalOsci();
+        Sleep(500);
     }
-}
-
-void MainWindow::stopThread()
-{
-    runThread.cancel();
 }
 
 void MainWindow::on_pushButtonStep_clicked()
@@ -629,8 +654,6 @@ void MainWindow::on_pushButtonStep_clicked()
     // Automatic mode with oscillation
     if ((1 == rastrManipulation.oscillation)&&(1 == dialog->mode))
     {
-//        emit stepSignal();
-//        runThread = QtConcurrent::run(this, &MainWindow::drawThreadOsci, paintRastr2->stepMov, rastrManipulation.jRastr);
         runThread = QtConcurrent::run(this, &this->drawThreadOsci,paintRastr2->stepMov, rastrManipulation.jRastr);
         return;
     }
@@ -638,33 +661,21 @@ void MainWindow::on_pushButtonStep_clicked()
     // Manual mode with oscillation
     if ((1 == rastrManipulation.oscillation)&&(0 == dialog->mode))
     {
-        oneStep();
+        oneStepOsci();
         return;
     }
 
     // Automatic mode without oscillation
     if ((0 == rastrManipulation.oscillation)&&(1 == dialog->mode))
     {
-        for (paintRastr2->stepMov=dialog->startStep; paintRastr2->stepMov<rastrManipulation.jRastr * 2; paintRastr2->stepMov++)
-        {
-            errorHandling(drawGraph(ui->customPlot1)); // Draw line in graph 1
-            ui->label->setText("Открытых окон: " + QString::number(graphY.last()));
-            paintRastr2->update(); // Update painted rastr with new coordinates
-            Sleep(100);
-        }
+        runThread = QtConcurrent::run(this, &this->drawThread,paintRastr2->stepMov, rastrManipulation.jRastr);
         return;
     }
 
     // Manual mode without oscillation
     if ((0 == rastrManipulation.oscillation)&&(0 == dialog->mode))
     {
-        if (paintRastr2->stepMov < rastrManipulation.jRastr * 2)
-        {
-            paintRastr2->stepMov += 1;                 // Representation of a Step
-            errorHandling(drawGraph(ui->customPlot1)); // Draw line in graph 1
-            ui->label->setText("Открытых окон: " + QString::number(graphY.last()));
-        }
-        paintRastr2->update(); // Update painted rastr with new coordinates
+        oneStep();
         return;
     }
 }
@@ -672,14 +683,7 @@ void MainWindow::on_pushButtonStep_clicked()
 // Quits the program
 void MainWindow::on_actionQuit_triggered()
 {
-//    if (NULL != rastrManipulation.rastr1)
-//    {
-//        checkForSave();
-//        rastrManipulation.deleteArray(rastrManipulation.iRastr);
-//    }
-//    exit(0);
     close();
-    // TODO don't quit if cancelled
 }
 
 void MainWindow::on_pushButtonColor_clicked()

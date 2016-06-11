@@ -49,7 +49,6 @@ StartWindow::StartWindow(QWidget *parent) :
 
     ui->lineEditX->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,10}"),this));
     ui->lineEditY->setValidator(new QRegExpValidator(QRegExp("[0-9]{1,10}"),this));
-
 }
 
 StartWindow::~StartWindow()
@@ -64,17 +63,15 @@ void StartWindow::on_pushButton_clicked()
         height = ui->lineEditY->text().toInt();
     if (1 == ui->comboBox->currentIndex())
         height = -1;
+    if (2 == ui->comboBox->currentIndex())
+        height = -1;
+    if (3 == ui->comboBox->currentIndex())
+        height = ui->lineEditY->text().toInt();
+
     matrixType = ui->comboBox->currentIndex();
-//    if (((width > 100)||(height > 100)||(width < 3)||(height < 3))&&((matrixType != 1)||(matrixType != 2)))
-//    {
-//        setResult(Rejected);
-//        QMessageBox::information(this, tr("Ошибка"), tr("Введены неверные параметры."));
-//    }
-//    else
-//    {
-        setResult(Accepted);
-        StartWindow::setVisible(0);
-//    }
+
+    setResult(Accepted);
+    StartWindow::setVisible(0);
 }
 
 void StartWindow::on_comboBox_currentIndexChanged(int index)

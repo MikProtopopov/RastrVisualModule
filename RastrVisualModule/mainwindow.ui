@@ -233,19 +233,6 @@
      <string>Открытых окон: 0</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="pushButtonStop">
-    <property name="geometry">
-     <rect>
-      <x>200</x>
-      <y>290</y>
-      <width>51</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>||</string>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
    <property name="geometry">

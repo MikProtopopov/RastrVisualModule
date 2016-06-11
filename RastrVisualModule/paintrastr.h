@@ -42,7 +42,7 @@ public:
 
     uint8_t **rastr; // Rastr for painting
     int stepMov; // Step of movement
-    int oStatus; // Counts the amount of vertical changes during oscillation
+    bool oStatus; // Counts the amount of vertical changes during oscillation
 
 
 protected:
