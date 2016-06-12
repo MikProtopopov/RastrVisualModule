@@ -38,7 +38,7 @@ StartWindow::StartWindow(QWidget *parent) :
     }
     if (2 == ui->comboBox->currentIndex())
     {
-        ui->lineEditY->setEnabled(0);
+//        ui->lineEditY->setEnabled(0);
         ui->textBrowser->setText("Матрица, построенная по алгоритмам Мурзиной.");
     }
     if (3 == ui->comboBox->currentIndex())
@@ -92,7 +92,7 @@ void StartWindow::on_comboBox_currentIndexChanged(int index)
     }
     if (2 == index)
     {
-        ui->lineEditY->setEnabled(0);
+//        ui->lineEditY->setEnabled(0);
         ui->label_2->setText("Размерность");
         ui->label->setText(" ");
         ui->textBrowser->setText("Матрица, построенная по алгоритмам Мурзиной.");

@@ -4,7 +4,7 @@ void Algorithm::swapCol(int i, int j)
 {
     for (int k=0; k<rastrSize; k++)
     {
-        int s = localRastr[k][i];
+        uint8_t s = localRastr[k][i];
         localRastr[k][i] = localRastr[k][j];
         localRastr[k][j] = s;
     }
@@ -23,6 +23,17 @@ void Algorithm::swapRow(int i, int j)
         int s = arrTemp1[i];
         arrTemp1[i] = arrTemp1[j];
         arrTemp1[j] = s;
+
+//    for (int k=0; k<rastrSize; k++)
+//    {
+//        uint8_t s = localRastr[i][k];
+//        localRastr[i][k] = localRastr[j][k];
+//        localRastr[j][k] = s;
+//    }
+
+//    int s = arrTemp2[i];
+//    arrTemp2[i] = arrTemp2[j];
+//    arrTemp2[j] = s;
 }
 
 bool Algorithm::NextSetCol()

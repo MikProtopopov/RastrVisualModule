@@ -31,7 +31,8 @@ public:
     explicit StartProgressForm(QWidget *parent = 0);
     ~StartProgressForm();
     int lineNumber;
-    int setNumber(int i);
+    int maximumCount;
+    int setNumber(int i, int j);
 
 private slots:
     void on_pushButton_clicked();

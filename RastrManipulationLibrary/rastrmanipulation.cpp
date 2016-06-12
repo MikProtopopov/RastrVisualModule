@@ -365,6 +365,21 @@ int RastrManipulation::compareRastr(int stepHorisontal, int stepVertical)
     return countWindow;
 }
 
+bool RastrManipulation::compareShlishevsky(int maxCount)
+{
+    if (maxCount < compareRastr(jRastr,1))
+        return false;
+
+    for (int i=1; i<jRastr; i++)
+        if (0 != compareRastr(jRastr + i, 1) - compareRastr(jRastr + i, 0))
+            return false;
+
+    for (int i=1; i<jRastr; i++)
+        if (0 != compareRastr(i, 1) - compareRastr(i, 0))
+            return false;
+    return true;
+}
+
 int RastrManipulation::countWindows()
 {
     if (NULL == rastr2)

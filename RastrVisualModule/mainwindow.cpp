@@ -290,8 +290,7 @@ int MainWindow::drawGraphCompare(QCustomPlot *customPlot)
     try {
         graphXComp.append(paintRastr2->stepMov); // Add value to vector for horizontal coordinates
         // Difference between rastrs
-        graphYComp.append(
-                    (abs(rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0))
+        graphYComp.append((abs(rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0))
                     + (rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0))) / 2);
     } catch(...){
         return 7;
@@ -451,10 +450,24 @@ void MainWindow::on_actionNew_clicked()
         ui->pushButtonColor->setEnabled(1);
     }
 
+    if (sWindow->getMatrixType() == 2)
+    {
+        QString fileName = QFileDialog::getOpenFileName(this, tr("Загрузить"),
+                                                        "", tr("Растровый файл (*.rastr);")); // Call for an "import" window
+        rastrManipulation.loadRastr(fileName);
+
+        rastrManipulation.oscillation = 1;
+        rastrManipulation.fillRastr2();
+        if(rastrManipulation.compareShlishevsky(1))
+            QMessageBox::information(this, tr("Ошибка"), tr("Некорректный элемент в строке."));
+//        sPForm->setNumber(sWindow->getWidth(), sWindow->getHeight());
+//        sPForm->exec();
+    }
+
     if (sWindow->getMatrixType() == 3)
     {
-//        rastrManipulation.createNewRastrAdamar(sWindow->getWidth());
-        sPForm->setNumber(sWindow->getWidth());
+        rastrManipulation.createNewRastrAdamar(sWindow->getWidth());
+        sPForm->setNumber(sWindow->getWidth(), sWindow->getHeight());
         sPForm->exec();
     }
 
@@ -735,9 +748,9 @@ void MainWindow::on_actionLoad_triggered()
 {
     if (rastrManipulation.rastr1 != NULL)
         checkForSave();
-
     QString fileName = QFileDialog::getOpenFileName(this, tr("Загрузить"),
                                                     "", tr("Растровый файл (*.rastr);")); // Call for an "import" window
+
     if (fileName.isEmpty())
         return;
 

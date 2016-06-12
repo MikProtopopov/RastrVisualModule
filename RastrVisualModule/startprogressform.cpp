@@ -38,16 +38,17 @@ StartProgressForm::~StartProgressForm()
 
 void StartProgressForm::on_pushButton_clicked()
 {
-    QString fileName = QFileDialog::getSaveFileName(this, tr("Выберите место для сохранения результатов"),
-                                                    "", tr("Бинарный файл (*.rastr);;Все файлы(*)")); // Call for an "save" window
-    ui->lineEdit->setText(fileName);
-    savePath = fileName;
-    // save
+    QString dirName = QFileDialog::getExistingDirectory(this, "Выберите место для сохранения результатов","Папка");
+
+    ui->lineEdit->setText(dirName);
+    QString fileName = "rastr123";
+    savePath = dirName + "/" + fileName;
 }
 
-int StartProgressForm::setNumber(int i)
+int StartProgressForm::setNumber(int i, int j)
 {
     lineNumber = i;
+    maximumCount = j;
 }
 
 void StartProgressForm::on_pushButton_2_clicked()
@@ -58,6 +59,12 @@ void StartProgressForm::on_pushButton_2_clicked()
         return;
     }
 
+    if ("" == ui->lineEdit_3->text())
+    {
+        QMessageBox::information(this, tr("Ошибка"), tr("Необходимо задать префикс файлов."));
+        return;
+    }
+
     if ("" != ui->lineEdit_2->text())
         threadCount = ui->lineEdit_2->text().toInt();
     else
@@ -65,6 +72,7 @@ void StartProgressForm::on_pushButton_2_clicked()
         QMessageBox::information(this, tr("Ошибка"), tr("Необходимо задать количество потоков."));
         return;
     }
-    pForm = new ProgressForm(this, lineNumber, 0, 0);
+    pForm = new ProgressForm(this, lineNumber, 0, lineNumber,
+                             maximumCount, ui->lineEdit->text(), ui->lineEdit_2->text().toInt(), ui->lineEdit_3->text());
     pForm->exec();
 }

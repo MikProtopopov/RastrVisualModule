@@ -21,15 +21,20 @@
 
 #include <math.h>
 
-ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart, int procEnd) :
+ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
+                           int procEnd, int maximum, QString path, int tNum, QString name) :
     QDialog(parent),
     ui(new Ui::ProgressForm)
 {
     ui->setupUi(this);
-    filePath = "";
+    dirPath = path;
+    filePath = name;
     ui->pushButton_3->setText("Остановить");
     numberString = QString::number(rastrSize);
+    rastrMax = maximum;
+    threadNumber = tNum;
 
+    ui->progressBar->setParent(this);
     ui->progressBar->setValue(0);
     ui->progressBar->setMinimum(0);
     ui->progressBar->setMaximum(100);
@@ -37,7 +42,8 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart, int pr
     connect(this, SIGNAL(pbSignal(int)), this, SLOT(pbUpdate(int)), Qt::DirectConnection);
 
     factorial(rastrSize);
-    runThread = QtConcurrent::run(this, &this->threadRunner, rastrSize, procStart, factResult /*procEnd*/); // REMOVE FACT RESULT
+    runThread = QtConcurrent::run(this, &this->threadRunner, rastrSize, procStart,
+                                  factResult /*procEnd*/, rastrMax, threadNumber); // REMOVE FACT RESULT
 }
 
 ProgressForm::~ProgressForm()
@@ -45,7 +51,7 @@ ProgressForm::~ProgressForm()
     delete ui;
 }
 
-void ProgressForm::threadRunner(int n, int start, int end)
+void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNum)
 {
     RastrManipulation rastrManipulation;
     Algorithm algorithm;
@@ -57,7 +63,7 @@ void ProgressForm::threadRunner(int n, int start, int end)
         algorithm.arrTempStart[i] = i;
 
     algorithm.arrTemp1 = new int[n];
-    memmove((char *)algorithm.arrTemp1, (char *)algorithm.arrTempStart,n*sizeof(int));
+    memmove(algorithm.arrTemp1, algorithm.arrTempStart,n*sizeof(int));
     algorithm.arrTemp2 = new int[n];
 
     rastrManipulation.setOscillation(1);
@@ -68,7 +74,7 @@ void ProgressForm::threadRunner(int n, int start, int end)
         algorithm.localRastr[i] = new uint8_t[n];
 
     for (int i=0; i<n; i++)
-        memmove(algorithm.localRastr[i],rastrManipulation.rastr1[i],n*sizeof(int));
+        memmove(algorithm.localRastr[i],rastrManipulation.rastr1[i],n);
 
     rastrManipulation.deleteArray(rastrManipulation.iRastr);
 
@@ -84,46 +90,37 @@ void ProgressForm::threadRunner(int n, int start, int end)
 
     rastrManipulation.fillRastr2();
 
+    for (int i=0; i<start; i++)
+        if (!algorithm.NextSetRow())
+        {
+            rastrManipulation.deleteArray(rastrManipulation.iRastr);
+            delete algorithm.arrTemp1;
+            delete algorithm.arrTemp2;
+            delete algorithm.arrTempStart;
+            delete algorithm.localRastr;
+            return;
+        }
 
+    int k=0;
 
-    ui->label->setText(QString::number(start));
-    ui->label_2->setText(QString::number(end));
-
-
-//    for (int i=0; i<start; i++)
-//        if (!algorithm.NextSetRow())
-//        {
-//            rastrManipulation.deleteArray(rastrManipulation.iRastr);
-//            delete algorithm.arrTemp1;
-//            delete algorithm.arrTemp2;
-//            delete algorithm.arrTempStart;
-//            delete algorithm.localRastr;
-//            return;
-//        }
+    ui->label_2->setText(QString::number(threadNum));
     for (int i=start; i<end; i++)
     {
-        memmove((char *)algorithm.arrTemp2,(char *)algorithm.arrTempStart,n*sizeof(int));
+        memmove(algorithm.arrTemp2,algorithm.arrTempStart,n*sizeof(int));
+        memmove(algorithm.arrTemp1,algorithm.arrTempStart,n*sizeof(int));
+
+        do{
+            k++;
+//            if (rastrManipulation.compareShlishevsky(max))
+                rastrManipulation.exportRastr(dirPath + "/" + filePath + "_" + QString::number(k) + ".txt");
+        }while(algorithm.NextSetCol());
+
         emit pbSignal(i); // * 100 / (end+1)
-        ui->label->setText(QString::number(i));
+
         if (!algorithm.NextSetRow())
             break;
     }
 
-//    while (algorithm.NextSetRow())
-//    {
-//        for (int j=0; j<n; j++)
-//            algorithm.arrTemp2[j] = j;
-
-//        emit pbSignal(10);
-//        Sleep(500);
-
-//        if (i < end)
-//            while (algorithm.NextSetCol())
-//            {
-//                i++;
-//                emit pbSignal(i);
-//            }
-//    }
     rastrManipulation.deleteArray(n);
     delete algorithm.arrTemp1;
     delete algorithm.arrTemp2;

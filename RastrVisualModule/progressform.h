@@ -33,7 +33,9 @@ class ProgressForm : public QDialog
     Q_OBJECT
 
 public:
-    explicit ProgressForm(QWidget *parent = 0, int rastrSize = 0, int procStart = 0, int procEnd = 0);
+    explicit ProgressForm(QWidget *parent = 0, int rastrSize = 0,
+                          int procStart = 0, int procEnd = 0, int maximum = 0,
+                          QString pathFile = "C:/", int tNum = 0, QString nameFile = "rastr");
     ~ProgressForm();
     void setLimits(int begin, int end);
     QString numberString;
@@ -50,6 +52,7 @@ private slots:
 private:
     Ui::ProgressForm *ui;
     QString filePath;
+    QString dirPath;
 
     int factorial(int n)
     {
@@ -61,13 +64,15 @@ private:
 
     int factResult;
 
-    void threadRunner(int n, int start, int end);
+    void threadRunner(int n, int start, int end, int max, int threadNum);
 
 
     QFuture<void> runThread;
 
+    int rastrMax;
     int start;
     int finish;
+    int threadNumber;
 };
 
 #endif // PROGRESSFORM_H

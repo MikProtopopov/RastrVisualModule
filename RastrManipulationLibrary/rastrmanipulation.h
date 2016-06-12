@@ -31,6 +31,7 @@ public:
     int jacobi(int a, int p);
 
     int compareRastr(int stepHorisontal, int stepVertical); // Function for counting the amount of open windows in rastr overlap
+    bool compareShlishevsky(int maxCount);
 
     int fillRastr2();              // Function for filling moving rastr with consideration of "oscillation" value
     int countWindows();            // Function for counting open windows in rastr overlap
