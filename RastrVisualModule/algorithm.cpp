@@ -1,4 +1,6 @@
 #include "algorithm.h"
+#include "rastrmanipulation.h"
+
 
 void Algorithm::swapCol(int i, int j)
 {
@@ -16,9 +18,17 @@ void Algorithm::swapCol(int i, int j)
 
 void Algorithm::swapRow(int i, int j)
 {
-        uint8_t *arrTemp = localRastr[i];
-        localRastr[i] = localRastr[j];
-        localRastr[j] = arrTemp;
+//        uint8_t *arrTemp = localRastr[i];
+//        localRastr[i] = localRastr[j];
+//        localRastr[j] = arrTemp;
+
+//        int s = arrTemp1[i];
+//        arrTemp1[i] = arrTemp1[j];
+//        arrTemp1[j] = s;
+
+        memmove(arrTemp,localRastr[i],n);
+        memmove(localRastr[i],localRastr[j],n);
+        memmove(localRastr[j],arrTemp,n);
 
         int s = arrTemp1[i];
         arrTemp1[i] = arrTemp1[j];

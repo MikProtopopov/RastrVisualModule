@@ -62,6 +62,10 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
     for (int i=0; i<n; i++)
         algorithm.arrTempStart[i] = i;
 
+    algorithm.arrTemp = new uint8_t[n];
+    algorithm.n = n;
+
+
     algorithm.arrTemp1 = new int[n];
     memmove(algorithm.arrTemp1, algorithm.arrTempStart,n*sizeof(int));
     algorithm.arrTemp2 = new int[n];
@@ -96,6 +100,7 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
             rastrManipulation.deleteArray(rastrManipulation.iRastr);
             delete algorithm.arrTemp1;
             delete algorithm.arrTemp2;
+            delete algorithm.arrTemp;
             delete algorithm.arrTempStart;
             delete algorithm.localRastr;
             return;
@@ -104,10 +109,9 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
     int k=0;
 
     ui->label_2->setText(QString::number(threadNum));
-    for (int i=start; i<end; i++)
+    for (int i=start ; i<end; i++)
     {
         memmove(algorithm.arrTemp2,algorithm.arrTempStart,n*sizeof(int));
-        memmove(algorithm.arrTemp1,algorithm.arrTempStart,n*sizeof(int));
 
         do{
             k++;
@@ -124,6 +128,7 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
     rastrManipulation.deleteArray(n);
     delete algorithm.arrTemp1;
     delete algorithm.arrTemp2;
+    delete algorithm.arrTemp;
     delete algorithm.arrTempStart;
     delete algorithm.localRastr;
     return;
