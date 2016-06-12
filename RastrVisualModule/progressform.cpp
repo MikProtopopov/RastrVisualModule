@@ -116,7 +116,8 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
         do{
             k++;
 //            if (rastrManipulation.compareShlishevsky(max))
-                rastrManipulation.exportRastr(dirPath + "/" + filePath + "_" + QString::number(k) + ".txt");
+                rastrManipulation.exportRastr(dirPath + "/" + filePath + "_" + QString::number(threadNum)
+                                              + QString::number(k) + ".txt");
         }while(algorithm.NextSetCol());
 
         emit pbSignal(i); // * 100 / (end+1)
@@ -149,5 +150,5 @@ void ProgressForm::setLimits(int begin, int end)
 
 void ProgressForm::on_pushButton_3_clicked()
 {
-//    runThread = QtConcurrent::run(this, &this->threadRunner, number);
+    emit markForm2Delete(this);
 }

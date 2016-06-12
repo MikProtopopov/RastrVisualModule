@@ -33,6 +33,10 @@ public:
     int lineNumber;
     int maximumCount;
     int setNumber(int i, int j);
+    QVector<ProgressForm *> formVector;
+
+public slots:
+    void deletePF(ProgressForm *form );
 
 private slots:
     void on_pushButton_clicked();

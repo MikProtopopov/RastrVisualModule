@@ -29,6 +29,7 @@ StartProgressForm::StartProgressForm(QWidget *parent) :
 
 
     ui->lineEdit_2->setText("1");
+
 }
 
 StartProgressForm::~StartProgressForm()
@@ -72,7 +73,21 @@ void StartProgressForm::on_pushButton_2_clicked()
         QMessageBox::information(this, tr("Ошибка"), tr("Необходимо задать количество потоков."));
         return;
     }
-    pForm = new ProgressForm(this, lineNumber, 0, lineNumber,
-                             maximumCount, ui->lineEdit->text(), ui->lineEdit_2->text().toInt(), ui->lineEdit_3->text());
-    pForm->exec();
+
+    for (int i=0; i<ui->lineEdit_2->text().toInt(); i++)
+    {
+        formVector.append(new ProgressForm(this, lineNumber, 0, lineNumber, maximumCount, ui->lineEdit->text(), i, ui->lineEdit_3->text()));
+        connect(formVector.last(),SIGNAL(markForm2Delete(int formNum)),this,SLOT(deletePF(int formNum)),Qt::DirectConnection);
+        formVector.last()->show();
+    }
 }
+
+void StartProgressForm::deletePF(ProgressForm *form )
+{
+    form->close();
+    disconnect(form,SIGNAL(markForm2Delete(ProgressForm *form )),this,SLOT(deletePF(ProgressForm *form )));
+    delete form;
+    formVector.remove(formVector.indexOf(form));
+}
+
+/*int formNum*/

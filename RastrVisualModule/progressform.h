@@ -45,6 +45,7 @@ public slots:
 
 signals:
     pbSignal(int i);
+    markForm2Delete(ProgressForm *form );
 
 private slots:
     void on_pushButton_3_clicked();
