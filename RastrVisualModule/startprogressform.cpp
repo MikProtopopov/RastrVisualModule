@@ -80,11 +80,13 @@ void StartProgressForm::on_pushButton_2_clicked()
         connect(formVector.last(),SIGNAL(markForm2Delete(ProgressForm *form)),this,SLOT(deletePF(ProgressForm *form)),Qt::DirectConnection);
         formVector.last()->show();
     }
+    this->close();
 }
 
 void StartProgressForm::deletePF(ProgressForm *form )
 {
     form->close();
+    form->deleteLater();
     disconnect(form,SIGNAL(markForm2Delete(ProgressForm *form )),this,SLOT(deletePF(ProgressForm *form )));
     delete form;
     formVector.remove(formVector.indexOf(form));

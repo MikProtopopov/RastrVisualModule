@@ -150,5 +150,6 @@ void ProgressForm::setLimits(int begin, int end)
 
 void ProgressForm::on_pushButton_3_clicked()
 {
+    emit pbSignal(0);
     emit markForm2Delete(this);
 }
