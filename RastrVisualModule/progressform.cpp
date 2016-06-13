@@ -41,9 +41,9 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
 
     connect(this, SIGNAL(pbSignal(int)), this, SLOT(pbUpdate(int)), Qt::DirectConnection);
 
-    factorial(rastrSize);
+    factorial(procEnd);
     runThread = QtConcurrent::run(this, &this->threadRunner, rastrSize, procStart,
-                                  factResult /*procEnd*/, rastrMax, threadNumber); // REMOVE FACT RESULT
+                                  procEnd, rastrMax, threadNumber); // REMOVE FACT RESULT
 }
 
 ProgressForm::~ProgressForm()
@@ -108,24 +108,17 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
 
     int k=0;
 
-    float percentCount = (float)(end - start) / 100;
-
-    for (int i=start, k=0; i<end; i++)
+    for (int i=start; i<end; i++)
     {
         memmove(algorithm.arrTemp2,algorithm.arrTempStart,n*sizeof(int));
 
         do{
             k++;
 //            if (rastrManipulation.compareShlishevsky(max))
-                rastrManipulation.exportRastr(dirPath + "/" + filePath + "_" + QString::number(threadNum)
-                                              + QString::number(k) + ".txt");
+                rastrManipulation.exportRastr(dirPath + "/" + filePath + "_" + QString::number(threadNum) +
+                                              "_" + QString::number(k) + ".txt");
         }while(algorithm.NextSetCol());
-
-        if (i/percentCount > k)
-        {
-            emit pbSignal(i); // * 100 / (end+1)
-            k = i/percentCount;
-        }
+            emit pbSignal((i-start)/(end-start)*100);
 
         if (!algorithm.NextSetRow())
             break;
