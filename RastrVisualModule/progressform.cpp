@@ -118,11 +118,11 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
                 rastrManipulation.exportRastr(dirPath + "/" + filePath + "_" + QString::number(threadNum) +
                                               "_" + QString::number(k) + ".txt");
         }while(algorithm.NextSetCol());
-            emit pbSignal((i-start)/(end-start)*100);
-
+        emit pbSignal(i);
         if (!algorithm.NextSetRow())
             break;
     }
+    emit pbSignal(end);
 
     rastrManipulation.deleteArray(n);
     delete algorithm.arrTemp1;
