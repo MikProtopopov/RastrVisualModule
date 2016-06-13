@@ -35,9 +35,9 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
     threadNumber = tNum;
 
     ui->progressBar->setParent(this);
-    ui->progressBar->setValue(0);
-    ui->progressBar->setMinimum(0);
-    ui->progressBar->setMaximum(100);
+    ui->progressBar->setValue(procStart);
+    ui->progressBar->setMinimum(procStart);
+    ui->progressBar->setMaximum(procEnd);
 
     connect(this, SIGNAL(pbSignal(int)), this, SLOT(pbUpdate(int)), Qt::DirectConnection);
 
@@ -108,8 +108,9 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
 
     int k=0;
 
-    ui->label_2->setText(QString::number(threadNum));
-    for (int i=start ; i<end; i++)
+    float percentCount = (float)(end - start) / 100;
+
+    for (int i=start, k=0; i<end; i++)
     {
         memmove(algorithm.arrTemp2,algorithm.arrTempStart,n*sizeof(int));
 
@@ -120,7 +121,11 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
                                               + QString::number(k) + ".txt");
         }while(algorithm.NextSetCol());
 
-        emit pbSignal(i); // * 100 / (end+1)
+        if (i/percentCount > k)
+        {
+            emit pbSignal(i); // * 100 / (end+1)
+            k = i/percentCount;
+        }
 
         if (!algorithm.NextSetRow())
             break;

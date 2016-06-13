@@ -74,9 +74,10 @@ void StartProgressForm::on_pushButton_2_clicked()
         return;
     }
 
+    factorial(lineNumber);
     for (int i=0; i<ui->lineEdit_2->text().toInt(); i++)
     {
-        formVector.append(new ProgressForm(this, lineNumber, 0, lineNumber, maximumCount, ui->lineEdit->text(), i, ui->lineEdit_3->text()));
+        formVector.append(new ProgressForm(this, lineNumber, i*factResult, (i+1)*factResult, maximumCount, ui->lineEdit->text(), i, ui->lineEdit_3->text()));
         connect(formVector.last(),SIGNAL(markForm2Delete(ProgressForm *form)),this,SLOT(deletePF(ProgressForm *form)),Qt::DirectConnection);
         formVector.last()->show();
     }
@@ -91,5 +92,3 @@ void StartProgressForm::deletePF(ProgressForm *form )
     delete form;
     formVector.remove(formVector.indexOf(form));
 }
-
-/*int formNum*/
