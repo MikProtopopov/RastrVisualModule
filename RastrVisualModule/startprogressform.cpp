@@ -75,9 +75,9 @@ void StartProgressForm::on_pushButton_2_clicked()
     }
 
     factorial(lineNumber);
-    for (int i=0; i<ui->lineEdit_2->text().toInt(); i++)
+    for (int i=0; i< threadCount; i++)
     {
-        formVector.append(new ProgressForm(this, lineNumber, i*factResult, (i+1)*factResult, maximumCount, ui->lineEdit->text(), i, ui->lineEdit_3->text()));
+        formVector.append(new ProgressForm(this, lineNumber, i*factResult/threadCount, (i+1)*factResult/threadCount, maximumCount, ui->lineEdit->text(), i, ui->lineEdit_3->text()));
         connect(formVector.last(),SIGNAL(markForm2Delete(ProgressForm *form)),this,SLOT(deletePF(ProgressForm *form)),Qt::DirectConnection);
         formVector.last()->show();
     }
