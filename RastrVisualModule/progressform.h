@@ -41,10 +41,10 @@ public:
     QString numberString;
 
 public slots:
-    void pbUpdate(int i);
+    void pbUpdate(int i, int count);
 
 signals:
-    pbSignal(int i);
+    pbSignal(int i, int count);
     markForm2Delete(ProgressForm *form );
 
 private slots:

@@ -33,13 +33,14 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
     numberString = QString::number(rastrSize);
     rastrMax = maximum;
     threadNumber = tNum;
+    finish = procEnd;
 
     ui->progressBar->setParent(this);
     ui->progressBar->setValue(procStart);
     ui->progressBar->setMinimum(procStart);
     ui->progressBar->setMaximum(procEnd);
 
-    connect(this, SIGNAL(pbSignal(int)), this, SLOT(pbUpdate(int)), Qt::DirectConnection);
+    connect(this, SIGNAL(pbSignal(int, int)), this, SLOT(pbUpdate(int, int)), Qt::BlockingQueuedConnection);
 
     factorial(procEnd);
     runThread = QtConcurrent::run(this, &this->threadRunner, rastrSize, procStart,
@@ -72,6 +73,10 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
 
     rastrManipulation.setOscillation(1);
     rastrManipulation.createNewRastrAdamar(n);
+
+    memset(rastrManipulation.rastr1[0], 0, n);
+    for (int i=1; i<n; i++)
+        rastrManipulation.rastr1[i][0] = 0;
 
     algorithm.localRastr = new uint8_t*[n];
     for (int i=0; i<n; i++)
@@ -106,23 +111,25 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
             return;
         }
 
-    int k=0;
+    int foundCount=0;
 
     for (int i=start; i<end; i++)
     {
         memmove(algorithm.arrTemp2,algorithm.arrTempStart,n*sizeof(int));
 
         do{
-            k++;
-//            if (rastrManipulation.compareShlishevsky(max))
-                rastrManipulation.exportRastr(dirPath + "/" + filePath + "_" + QString::number(threadNum) +
-                                              "_" + QString::number(k) + ".txt");
+            if (rastrManipulation.compareShlishevsky(max))
+            {
+                rastrManipulation.saveRastr(dirPath + "/" + filePath + "_" + QString::number(threadNum) +
+                                              "_" + QString::number(foundCount) + ".rastr");
+                foundCount++;
+            }
+            emit pbSignal(i+1,foundCount);
         }while(algorithm.NextSetCol());
-        emit pbSignal(i+1);
+
         if (!algorithm.NextSetRow())
             break;
     }
-//    emit pbSignal(end);
 
     rastrManipulation.deleteArray(n);
     delete algorithm.arrTemp1;
@@ -133,21 +140,14 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
     return;
 }
 
-void ProgressForm::pbUpdate(int i)
+void ProgressForm::pbUpdate(int i, int count)
 {
     ui->progressBar->setValue(i);
-    Sleep(500);
-    return;
-}
-
-void ProgressForm::setLimits(int begin, int end)
-{
-    start = begin;
-    finish = end;
+    ui->label_2->setText(QString::number(count));
+    QCoreApplication::processEvents();
 }
 
 void ProgressForm::on_pushButton_3_clicked()
 {
-    emit pbSignal(0);
     emit markForm2Delete(this);
 }
