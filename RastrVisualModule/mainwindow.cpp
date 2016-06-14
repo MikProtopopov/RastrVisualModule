@@ -452,6 +452,10 @@ void MainWindow::on_actionNew_clicked()
 
     if (sWindow->getMatrixType() == 2)
     {
+        rastrManipulation.createNewRastrMurzina(sWindow->getWidth());
+        ui->pushButtonStep->setEnabled(0); // Disables "Step" button
+        ui->pushButtonStart->setEnabled(1); // Enables "Start" button
+        ui->pushButtonColor->setEnabled(1);
     }
 
     if (sWindow->getMatrixType() == 3)
@@ -460,6 +464,7 @@ void MainWindow::on_actionNew_clicked()
         sPForm->setNumber(sWindow->getWidth(), sWindow->getHeight());
         sPForm->exec();
 //        sPForm->deleteLater();
+        return;
     }
 
 

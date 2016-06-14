@@ -46,6 +46,7 @@ public:
 
     int createNewRastr(const int &xInt, const int &yInt);
     void createNewRastrAdamar(const int &xInt);
+    int createNewRastrMurzina(const int &xInt);
 
 
 };

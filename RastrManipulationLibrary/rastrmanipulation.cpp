@@ -95,6 +95,65 @@ void RastrManipulation::createNewRastrAdamar(const int &xInt)
     }
 }
 
+int RastrManipulation::createNewRastrMurzina(const int &xInt)
+{
+    iRastr = xInt;
+    jRastr = xInt;
+    createNewRastrAdamar(iRastr);
+
+    uint8_t **localRastr = new uint8_t*[2*iRastr];
+    for (int i=0; i<2*iRastr; i++)
+        localRastr[i] = new uint8_t[jRastr];
+
+    for (int i=0; i<2*iRastr;i++)
+        for (int j=0; j<jRastr; j++)
+            if (0 == i % 2)
+                localRastr[i][j] = !rastr1[i/2][j];
+            else
+                localRastr[i][j] = rastr1[i/2][j];
+
+//    for (int i=0; i<2*iRastr; i++)
+//        localRastr[i][0] = 1;
+
+//    uint8_t *arrayL = new uint8_t[jRastr];
+//    memset(arrayL, 1, jRastr);
+
+//    rastr1[0][1] = !rastr1[iRastr-1][jRastr-1];
+
+//    for (int j=2; j<jRastr; j++)
+//        arrayL[j] = !rastr1[iRastr][j-1];
+
+//    deleteArray(iRastr);
+
+//    rastr1 = new uint8_t*[2*iRastr + 1];
+//    for (int i=0; i<2*iRastr + 1; i++)
+//        rastr1[i] = new uint8_t[jRastr];
+
+//    for (int i=0; i<2*iRastr; i++)
+//        memmove(rastr1[i],localRastr[i],jRastr);
+//    memmove(rastr1[2*iRastr],arrayL, jRastr);
+//    iRastr = iRastr*2 + 1;
+
+    // -----/!\-----/!\-----
+    deleteArray(iRastr);
+
+    rastr1 = new uint8_t*[2*iRastr];
+    for (int i=0; i<2*iRastr; i++)
+        rastr1[i] = new uint8_t[jRastr];
+
+    for (int i=0;i<2*iRastr;i++)
+        memmove(rastr1[i],localRastr[i],jRastr);
+    iRastr = iRastr*2;
+    // -----/!\-----/!\-----
+
+    for (int i=0; i<2*iRastr; i++)
+        delete localRastr[i];
+    delete localRastr;
+//    delete arrayL;
+
+    return 0;
+}
+
 int RastrManipulation::jacobi(int a, int p)
 {
     int s;
