@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <stdlib.h>
 #include <iostream>
+#include <windows.h>
 
 RastrManipulation::RastrManipulation()
 {
@@ -174,19 +175,49 @@ int RastrManipulation::createNewRastrMurzina(const int &xInt)
     for (int i=2; i<iRastr*2 + 3; i++)
         memmove(tempRastr[i],rastr1[i-2],jRastr);
 
+    rastr2 = new uint8_t*[2*iRastr+2];
+    for (int i=0; i<2*iRastr; i++)
+    {
+        rastr2[i] = new uint8_t[jRastr];
+        memmove(rastr2[i],localRastr[2*iRastr-1-i],jRastr);
+    }
+
+    memset(rastr2[2*iRastr],1,jRastr);
+    memset(rastr2[2*iRastr+1],1,jRastr);
+
+    for (int i=0; i<2*iRastr; i++)
+        delete localRastr[i];
+    delete localRastr;
+
+    uint8_t **localRastr = new uint8_t*[2*iRastr+2];
+    for (int i=0; i<2*iRastr+2; i++)
+        localRastr[i] = new uint8_t[jRastr];
+
+    for (int i=0; i<2*iRastr+2;i++)
+        memmove(localRastr[i],rastr2[i],jRastr);
+
     delete rastr1;
+    delete rastr2;
 
     iRastr = 2*iRastr + 3;
+    jRastr = 2*jRastr;
 
     rastr1 = new uint8_t*[iRastr];
     for (int i=0; i<iRastr; i++)
     {
-        rastr1[i] = new uint8_t[jRastr*2];
-        for (int j=0; j<jRastr*2; j++)
+        rastr1[iRastr - 1 - i] = new uint8_t[jRastr];
+        for (int j=0; j<jRastr; j++)
             rastr1[iRastr - 1 - i][j] = tempRastr[i][j/2];
     }
 
-    jRastr = 2*jRastr;
+    rastr2 = new uint8_t*[iRastr-1];
+    for (int i=0;i<iRastr-1;i++)
+    {
+        rastr2[i] = new uint8_t[jRastr];
+        for (int j=0; j<jRastr; j++)
+            rastr2[i][j] = localRastr[i][j/2];
+    }
+
 
 
 // -----/!\-----/!\-----
@@ -251,7 +282,13 @@ int RastrManipulation::jacobi(int a, int p)
 void RastrManipulation::deleteArray(int DeleteLines) // DeleteLines - number of lines in array we are deleting
 {
     for (int i=0; i<DeleteLines; i++)
+    {
         delete[] rastr1[i];
+        rastr1[i] = NULL;
+
+        if(NULL != rastr2)
+           delete [] rastr2[i];
+    }
     delete[] rastr1;
     rastr1 = NULL;
 

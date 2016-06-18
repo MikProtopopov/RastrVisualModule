@@ -290,8 +290,9 @@ int MainWindow::drawGraphCompare(QCustomPlot *customPlot)
     try {
         graphXComp.append(paintRastr2->stepMov); // Add value to vector for horizontal coordinates
         // Difference between rastrs
-        graphYComp.append((abs(rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0))
-                    + (rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0))) / 2);
+//        graphYComp.append((abs(rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0))
+//                    + (rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0))) / 2);
+        graphYComp.append(rastrManipulation.compareRastr(paintRastr2->stepMov,1) - rastrManipulation.compareRastr(paintRastr2->stepMov,0));
     } catch(...){
         return 7;
     }
@@ -354,7 +355,8 @@ void MainWindow::on_pushButtonStart_clicked()
 
     rastrManipulation.setOscillation(dialog->oscillation);
 
-    errorHandling(rastrManipulation.fillRastr2()); // Fills second, moving rastr
+    if (NULL == rastrManipulation.rastr2)
+        errorHandling(rastrManipulation.fillRastr2()); // Fills second, moving rastr
 
     paintRastr2->setBGColor(Qt::white);
     paintRastr2->setParameters(ui->graphicsView_1->height(), ui->graphicsView_1->width(),
