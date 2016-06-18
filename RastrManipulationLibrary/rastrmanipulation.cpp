@@ -179,12 +179,11 @@ int RastrManipulation::createNewRastrMurzina(const int &xInt)
 
     rastr1 = new uint8_t*[2*iRastr + 3];
     for (int i=0; i<2*iRastr + 3; i++)
-        rastr1[i] = tempRastr[i];
-
-    iRastr = 2*iRastr + 3;
-
-    for (int i=0; i<iRastr; i++)
+    {
+        rastr1[i] = new uint8_t[jRastr];
         memmove(rastr1[i],tempRastr[i],jRastr);
+    }
+    iRastr = 2*iRastr + 3;
 
 // -----/!\-----/!\-----
 //    deleteArray(iRastr);
@@ -197,11 +196,11 @@ int RastrManipulation::createNewRastrMurzina(const int &xInt)
 //        memmove(rastr1[i],localRastr[i],jRastr);
     // -----/!\-----/!\-----
 
-//    for (int i=0; i<2*iRastr; i++)
-//        delete localRastr[i];
-//    delete localRastr;
-//    delete arrayL;
-//    iRastr = iRastr*2 + 1;
+    for (int i=0; i<(iRastr/2-3); i++)
+        delete localRastr[i];
+    delete localRastr;
+    delete arrayL;
+    iRastr = iRastr*2 + 1;
 
     return 0;
 }
