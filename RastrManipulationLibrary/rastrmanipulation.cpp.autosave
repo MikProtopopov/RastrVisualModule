@@ -183,7 +183,7 @@ int RastrManipulation::createNewRastrMurzina(const int &xInt)
     {
         rastr1[i] = new uint8_t[jRastr*2];
         for (int j=0; j<jRastr*2; j++)
-            rastr1[iRastr - i][j] = tempRastr[i][j/2];
+            rastr1[iRastr - 1 - i][j] = tempRastr[i][j/2];
     }
 
     jRastr = 2*jRastr;
