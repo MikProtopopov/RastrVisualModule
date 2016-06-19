@@ -57,7 +57,7 @@ private:
     Ui::ProgressForm *ui;
     QString filePath;
     QString dirPath;
-    ThreadStop threadStop(&mutex, false);
+    ThreadStop threadStop(QMutex _mutex, bool _value);
 
     QMutex mutex;
 

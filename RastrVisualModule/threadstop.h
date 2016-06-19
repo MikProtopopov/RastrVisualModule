@@ -7,6 +7,7 @@
 class ThreadStop : public QObject
 {
 public:
+    QMutex *mutex;
     ThreadStop(QMutex *_mutex, bool _value);
     bool stopThread = false;
     void set(bool _value);
@@ -17,7 +18,7 @@ public slots:
     void markThread2Stop();
 
 private:
-    QMutex *mutex;
+
     bool value;
 };
 

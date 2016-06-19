@@ -42,7 +42,7 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
     ui->progressBar->setMaximum(procEnd);
 
     connect(this, SIGNAL(pbSignal(int, int)), this, SLOT(pbUpdate(int, int)), Qt::BlockingQueuedConnection);
-    connect(this, SIGNAL(stopThread()),&threadStop,SLOT(markThread2Stop()),Qt::QueuedConnection);
+//    connect(this, SIGNAL(stopThread()),&threadStop,SLOT(markThread2Stop()),Qt::QueuedConnection);
 
 
     runThread = QtConcurrent::run(this, &this->threadRunner, rastrSize, procStart,
@@ -165,7 +165,7 @@ void ProgressForm::pbUpdate(int i, int count)
 
 void ProgressForm::on_pushButton_3_clicked()
 {
-    threadStop.set(True);
+    threadStop.set(true);
 //    emit stopThread();
 //    delete this;
 }
