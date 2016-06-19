@@ -21,9 +21,9 @@
 #include <QtConcurrent/QtConcurrentRun>
 #include <QProgressBar>
 #include <QPushButton>
+#include <QMutex>
 #include <stdint.h>
 #include <threadstop.h>
-
 
 namespace Ui {
 class ProgressForm;
@@ -41,6 +41,7 @@ public:
     void setLimits(int begin, int end);
     QString numberString;
 
+
 public slots:
     void pbUpdate(int i, int count);
 
@@ -56,6 +57,9 @@ private:
     Ui::ProgressForm *ui;
     QString filePath;
     QString dirPath;
+    ThreadStop threadStop;
+
+    QMutex mutex;
 
     int factorial(int n)
     {
