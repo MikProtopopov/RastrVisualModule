@@ -30,7 +30,7 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
     ui->setupUi(this);
     dirPath = path;
     filePath = name;
-    ui->pushButton_3->setText("Остановить");
+    ui->pushButton_3->setText("Завершить");
     numberString = QString::number(rastrSize);
     rastrMax = maximum;
     threadNumber = tNum;
@@ -51,7 +51,7 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
 
 ProgressForm::~ProgressForm()
 {
-    runThread.waitForFinished();
+//    runThread.waitForFinished();
     delete threadStop;
     delete ui;
 }
@@ -131,7 +131,6 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
             emit pbSignal(i+1,foundCount);
             if (threadStop->get())
             {
-                emit pbSignal(start,10);
                 rastrManipulation.deleteArray(rastrManipulation.iRastr);
                 delete algorithm.arrTemp1;
                 delete algorithm.arrTemp2;
@@ -165,5 +164,5 @@ void ProgressForm::pbUpdate(int i, int count)
 void ProgressForm::on_pushButton_3_clicked()
 {
     threadStop->set(true);
-//    delete this;
+    delete this;
 }
