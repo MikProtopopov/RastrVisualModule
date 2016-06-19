@@ -2,7 +2,7 @@
 #define THREADSTOP_H
 
 #include <QObject>
-
+#include <QMutex>
 
 class ThreadStop : public QObject
 {

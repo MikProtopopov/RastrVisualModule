@@ -1,5 +1,4 @@
 #include "threadstop.h"
-#include <QMutex>
 
 ThreadStop::ThreadStop(QMutex *_mutex, bool _value)
 {
@@ -12,13 +11,13 @@ void ThreadStop::markThread2Stop()
     stopThread = true;
 }
 
-void set(bool _value)
+void ThreadStop::set(bool _value)
 {
     QMutexLocker locker(mutex);
     value = _value;
 }
 
-bool get()
+bool ThreadStop::get()
 {
     QMutexLocker locker(mutex);
     return value;
