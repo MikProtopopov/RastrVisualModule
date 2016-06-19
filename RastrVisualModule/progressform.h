@@ -22,6 +22,7 @@
 #include <QProgressBar>
 #include <QPushButton>
 #include <stdint.h>
+#include <threadstop.h>
 
 
 namespace Ui {
@@ -46,6 +47,7 @@ public slots:
 signals:
     pbSignal(int i, int count);
     markForm2Delete(ProgressForm *form );
+    stopThread();
 
 private slots:
     void on_pushButton_3_clicked();

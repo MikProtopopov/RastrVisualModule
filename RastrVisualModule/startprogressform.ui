@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Параметры работы</string>
   </property>
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">

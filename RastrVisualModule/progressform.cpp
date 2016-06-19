@@ -41,6 +41,7 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
     ui->progressBar->setMaximum(procEnd);
 
     connect(this, SIGNAL(pbSignal(int, int)), this, SLOT(pbUpdate(int, int)), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(stopThread()),ThreadStop,SLOT(markThread2Stop()),Qt::BlockingQueuedConnection);
 
     factorial(procEnd);
     runThread = QtConcurrent::run(this, &this->threadRunner, rastrSize, procStart,
@@ -49,6 +50,7 @@ ProgressForm::ProgressForm(QWidget *parent, int rastrSize, int procStart,
 
 ProgressForm::~ProgressForm()
 {
+    runThread.waitForFinished();
     delete ui;
 }
 
@@ -56,6 +58,7 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
 {
     RastrManipulation rastrManipulation;
     Algorithm algorithm;
+    ThreadStop threadStop;
 
     algorithm.rastrSize = n;
 
@@ -125,6 +128,16 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
                 foundCount++;
             }
             emit pbSignal(i+1,foundCount);
+            if (threadStop.stopThread)
+            {
+                rastrManipulation.deleteArray(rastrManipulation.iRastr);
+                delete algorithm.arrTemp1;
+                delete algorithm.arrTemp2;
+                delete algorithm.arrTemp;
+                delete algorithm.arrTempStart;
+                delete algorithm.localRastr;
+                return;
+            }
         }while(algorithm.NextSetCol());
 
         if (!algorithm.NextSetRow())
@@ -149,5 +162,6 @@ void ProgressForm::pbUpdate(int i, int count)
 
 void ProgressForm::on_pushButton_3_clicked()
 {
-    emit markForm2Delete(this);
+    emit stopThread();
+    delete this;
 }

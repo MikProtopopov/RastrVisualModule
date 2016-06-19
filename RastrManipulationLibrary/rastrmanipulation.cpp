@@ -182,6 +182,9 @@ int RastrManipulation::createNewRastrMurzina(const int &xInt)
         memmove(rastr2[i],localRastr[2*iRastr-1-i],jRastr);
     }
 
+    rastr2[2*iRastr] = new uint8_t[jRastr];
+    rastr2[2*iRastr+1] = new uint8_t[jRastr];
+
     memmove(rastr2[2*iRastr+1],rastr1[1],jRastr);
     memset(rastr2[2*iRastr],1,jRastr);
 

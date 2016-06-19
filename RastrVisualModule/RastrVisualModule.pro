@@ -22,7 +22,8 @@ SOURCES += main.cpp\
     helpwindow.cpp \
     progressform.cpp \
     startprogressform.cpp \
-    algorithm.cpp
+    algorithm.cpp \
+    threadstop.cpp
 
 HEADERS  += \
     dialog.h \
@@ -34,7 +35,8 @@ HEADERS  += \
     helpwindow.h \
     progressform.h \
     startprogressform.h \
-    algorithm.h
+    algorithm.h \
+    threadstop.h
 
 FORMS    += \
     dialog.ui \
