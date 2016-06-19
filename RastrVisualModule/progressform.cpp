@@ -58,7 +58,7 @@ void ProgressForm::threadRunner(int n, int start, int end, int max, int threadNu
     RastrManipulation rastrManipulation;
     Algorithm algorithm;
     ThreadStop threadStop;
-    connect(this, SIGNAL(stopThread()),threadStop,SLOT(markThread2Stop()),Qt::BlockingQueuedConnection);
+    QObject::connect(this, SIGNAL(stopThread()),&threadStop,SLOT(markThread2Stop()),Qt::BlockingQueuedConnection);
 
     algorithm.rastrSize = n;
 
