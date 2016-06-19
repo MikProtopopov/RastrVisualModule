@@ -100,6 +100,7 @@ int RastrManipulation::createNewRastrMurzina(const int &xInt)
 {
     iRastr = xInt;
     jRastr = xInt;
+    oscillation = 1;
     createNewRastrAdamar(iRastr);
 
     uint8_t **localRastr = new uint8_t*[2*iRastr];
@@ -293,9 +294,9 @@ void RastrManipulation::deleteArray(int DeleteLines) // DeleteLines - number of 
     delete[] rastr1;
     rastr1 = NULL;
 
-    if ((rastr2 != NULL)&&(1 == oscillation))
+    if (rastr2 != NULL)
     {
-        for (int i=0; i<iRastr-1;i++)
+        for (int i=0; i<DeleteLines-1;i++)
             if(NULL != rastr2[i])
                 delete [] rastr2[i];
         delete[] rastr2;

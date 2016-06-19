@@ -109,8 +109,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent),ui(new Ui::MainWin
     connect(ui->actionImport, SIGNAL(triggered()), this, SLOT(on_actionImport_clicked()));
     connect(ui->actionNew, SIGNAL(triggered()), this, SLOT(on_actionNew_clicked()));
     connect(ui->actionManual, SIGNAL(triggered()), helpWindow, SLOT(loadHelp()));
-    connect(this, SIGNAL(stepSignal()), this, SLOT(oneStep()), Qt::DirectConnection);
-    connect(this, SIGNAL(stepSignalOsci()), this, SLOT(oneStepOsci()), Qt::DirectConnection);
+    connect(this, SIGNAL(stepSignal()), this, SLOT(oneStep()), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(stepSignalOsci()), this, SLOT(oneStepOsci()), Qt::BlockingQueuedConnection);
 
 }
 
@@ -462,7 +462,6 @@ void MainWindow::on_actionNew_clicked()
 
     if (sWindow->getMatrixType() == 3)
     {
-        rastrManipulation.createNewRastrAdamar(sWindow->getWidth());
         sPForm->setNumber(sWindow->getWidth(), sWindow->getHeight());
         sPForm->exec();
 //        sPForm->deleteLater();
