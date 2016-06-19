@@ -6,11 +6,6 @@ ThreadStop::ThreadStop(QMutex *_mutex, bool _value)
     mutex = _mutex;
 }
 
-void ThreadStop::markThread2Stop()
-{
-    stopThread = true;
-}
-
 void ThreadStop::set(bool _value)
 {
     QMutexLocker locker(mutex);

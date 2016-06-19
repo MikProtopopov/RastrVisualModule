@@ -74,7 +74,8 @@ void StartProgressForm::on_pushButton_2_clicked()
         return;
     }
 
-    factorial(lineNumber);
+    int factResult = factorial(lineNumber);
+
     for (int i=0; i< threadCount; i++)
     {
         formVector.append(new ProgressForm(this, lineNumber, i*factResult/threadCount, (i+1)*factResult/threadCount, maximumCount, ui->lineEdit->text(), i, ui->lineEdit_3->text()));
@@ -91,4 +92,12 @@ void StartProgressForm::deletePF(ProgressForm *form )
     disconnect(form,SIGNAL(markForm2Delete(ProgressForm *form )),this,SLOT(deletePF(ProgressForm *form )));
     delete form;
     formVector.remove(formVector.indexOf(form));
+}
+
+int StartProgressForm::factorial(int n)
+{
+    int f = 1;
+    for (int i=1; i<=n; i++)
+        f *= i;
+    return f;
 }

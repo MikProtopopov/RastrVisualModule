@@ -49,15 +49,9 @@ private:
 
     int threadCount;
     QString savePath;
-    int factResult;
 
-    int factorial(int n)
-    {
-        factResult = 1;
-        for (int i=1; i<=n; i++)
-            factResult *= i;
-        return factResult;
-    }
+    int factorial(int n);
+
 };
 
 #endif // STARTPROGRESSFORM_H

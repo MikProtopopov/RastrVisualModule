@@ -48,7 +48,6 @@ public slots:
 signals:
     pbSignal(int i, int count);
     markForm2Delete(ProgressForm *form );
-    stopThread();
 
 private slots:
     void on_pushButton_3_clicked();
@@ -60,16 +59,6 @@ private:
     ThreadStop *threadStop;
 
     QMutex mutex;
-
-    int factorial(int n)
-    {
-        factResult = 1;
-        for (int i=1; i<=n; i++)
-            factResult *= i;
-        return factResult;
-    }
-
-    int factResult;
 
     void threadRunner(int n, int start, int end, int max, int threadNum);
 
