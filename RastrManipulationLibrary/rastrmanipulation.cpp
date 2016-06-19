@@ -289,15 +289,17 @@ void RastrManipulation::deleteArray(int DeleteLines) // DeleteLines - number of 
     {
         delete[] rastr1[i];
         rastr1[i] = NULL;
-
-        if(NULL != rastr2)
-           delete [] rastr2[i];
     }
     delete[] rastr1;
     rastr1 = NULL;
 
     if ((rastr2 != NULL)&&(1 == oscillation))
+    {
+        for (int i=0; i<iRastr-1;i++)
+            if(NULL != rastr2[i])
+                delete [] rastr2[i];
         delete[] rastr2;
+    }
 
     rastr2 = NULL;
 }
