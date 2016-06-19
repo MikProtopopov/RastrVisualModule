@@ -7,9 +7,9 @@
 class ThreadStop : public QObject
 {
 public:
-    ThreadStop();
+    ThreadStop(QMutex *_mutex, bool _value);
     bool stopThread = false;
-    void set(T_value);
+    void set(bool _value);
     bool get();
 
 
